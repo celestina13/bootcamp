@@ -1,0 +1,41 @@
+# unixPrac1.txt
+# Author: Celestina Hall (ceh121@ic.ac.uk)
+# Description: UNIX commands answering the five FASTA practical questions
+
+#1 - Count how many lines there are in each FASTA file
+
+wc -l ../data/fasta/*.fasta
+
+#Explanation: Prints the line count of each of the three FASTA files
+#wc -l counts newline characters, so the last line without a newline at the end is not counted
+#The two numbered files end this way, making their counts one lower than the no of lines displayed
+
+
+#2 - E.coli genome = print everything from the second line onwards
+
+tail -n +2 ../data/fasta/e_coli.fasta
+
+#Explanation: tail -n +2 prints the entire file from line 2
+#Line 1 is the header, so should be excluded, as it is not part of the DNA sequence 
+
+
+#3 - Count the sequence length of the E.coli genome
+
+tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | wc -c
+
+#Explanation: tail -n +2 skips the header line that's not part of the DNA sequence
+#tr -d "\n" removes the newlines, because they aren't bases 
+#wc -c counts what's remaining
+#The result is the no of sequnce positions, including ambigious symbols (e.g N)
+
+
+#4 - Count the matches of "ATGC" in the E.coli genome
+
+tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | grep -o "ATGC" | wc -l
+
+#Explanation: As in Q3, header and newlines are removed, so matches split across line breaks aren't missed 
+#grep -o prints each ATGC match on its own line and wc -l counts them
+#grep -c would count matching lines not occurences 
+
+
+#5 - Compute the AT/GC ratio, as a single no
