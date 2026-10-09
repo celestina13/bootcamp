@@ -39,3 +39,9 @@ tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | grep -o "ATGC" | wc -l
 
 
 #5 - Compute the AT/GC ratio, as a single no
+
+echo "scale=3; $(tail -n +2 ../data/fasta/e_coli.fasta | grep -o '[AT]' | wc -l) / $(tail -n +2 ../data/fasta/e_coli.fasta | grep -o ['GC'] | wc -l)" | bc
+
+#Explanation: echo "..." prints the result of the calculation, scale=3 gives the answer to 3 decimal places 
+#tail -n +2 skips the header, grep -o ['AT'] finds every AT, / is the divide sign, bc sends the text to the calculator
+
