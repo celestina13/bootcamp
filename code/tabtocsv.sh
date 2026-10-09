@@ -20,11 +20,12 @@ else
 fi
 
 #Output goes in ../results/, named after the input file
-#Folder created if it does not exist; any existing file is overwritten
+#Folder created if it does not exist and any existing file is overwritten
 output_file="../results/$(basename "$1").csv"
 mkdir -p ../results
 
 #Convert tabs to commas and save to output file
+#Removed -s from tr so empty fields are not removed, to prevent data loss/corruption
 tr "\t" "," < "$1" > "$output_file"
 
 #Check if the conversion was successful, if failed report error
