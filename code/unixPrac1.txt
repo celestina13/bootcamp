@@ -2,46 +2,48 @@
 # Author: Celestina Hall (ceh121@ic.ac.uk)
 # Description: UNIX commands answering the five FASTA practical questions
 
-#1 - Count how many lines there are in each FASTA file
+#1
 
 wc -l ../data/fasta/*.fasta
 
-#Explanation: Prints the line count of each of the three FASTA files
-#wc -l counts newline characters, so the last line without a newline at the end is not counted
-#The two numbered files end this way, making their counts one lower than the no of lines displayed
+#Explanation: prints the line count of each of the three FASTA files
+#but wc -l counts newline characters, so the last line without a newline at the end is not counted
+#the two numbered files end this way, so they show 27 and 127 but actually have 28 and 128 lines
 
 
-#2 - E.coli genome = print everything from the second line onwards
+#2
 
 tail -n +2 ../data/fasta/e_coli.fasta
 
 #Explanation: tail -n +2 prints the entire file from line 2
-#Line 1 is the header, so should be excluded, as it is not part of the DNA sequence 
+#line 1 is the header, so should be excluded, as it is not part of the DNA sequence 
 
-
-#3 - Count the sequence length of the E.coli genome
+#3
 
 tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | wc -c
 
-#Explanation: tail -n +2 skips the header line that's not part of the DNA sequence
+#Explanation: tail -n +2 skips the header line
 #tr -d "\n" removes the newlines, because they aren't bases 
 #wc -c counts what's remaining
-#The result is the no of sequnce positions, including ambigious symbols (e.g N)
+#result = the no of sequence positions, including ambiguous symbols (e.g N)
 
 
-#4 - Count the matches of "ATGC" in the E.coli genome
+#4
 
 tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | grep -o "ATGC" | wc -l
 
 #Explanation: As in Q3, header and newlines are removed, so matches split across line breaks aren't missed 
-#grep -o prints each ATGC match on its own line and wc -l counts them
-#grep -c would count matching lines not occurences 
+#grep -o prints each ATGC match on its own line and wc -l counts them 
+#result = matches of "ATGC" in the genome
 
 
-#5 - Compute the AT/GC ratio, as a single no
+#5
 
-echo "scale=3; $(tail -n +2 ../data/fasta/e_coli.fasta | grep -o '[AT]' | wc -l) / $(tail -n +2 ../data/fasta/e_coli.fasta | grep -o ['GC'] | wc -l)" | bc
+echo "$(tail -n +2 ../data/fasta/e_coli.fasta | grep -o '[AT]' | wc -l) / $(tail -n +2 ../data/fasta/e_coli.fasta | grep -o '[GC]' | wc -l)" | bc -l
 
-#Explanation: echo "..." prints the result of the calculation, scale=3 gives the answer to 3 decimal places 
-#tail -n +2 skips the header, grep -o ['AT'] finds every AT, / is the divide sign, bc sends the text to the calculator
+#Explanation: Counts every A and T in the genome and every G and C in the genome, skipping the header line for both
+#echo writes the two counts as a division and bc -l calculates it as a decimal
+#result = no of A and T bases divided by no of G and C bases
+
+
 

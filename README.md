@@ -27,6 +27,8 @@ To test, compare with the expected output on the supplied files:
 4. ATGC matches: 21968
 5. AT/GC ratio: 0.969 (printed to 20 decimal places)
 
+Q5 uses grep bracket expressions ('[AT]', '[GC]') to match either base. See `man grep`, "Character Classes and Bracket Expressions".
+
 #tabtocsv.sh
 
 Converts a tab-delimited file to comma-delimited. The input is left
