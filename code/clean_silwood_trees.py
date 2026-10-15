@@ -4,11 +4,12 @@
 from __future__ import annotations
 
 import csv
+import math
 from pathlib import Path
 from typing import Iterable
 
 
-PROJECT_ROOT = Path((__file__)).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 INPUT_PATH = PROJECT_ROOT / "data" / "silwood_trees_raw.csv"
 RESULTS_DIR = PROJECT_ROOT / "results"
 
@@ -23,10 +24,9 @@ INPUT_FIELDS = [
 ISSUE_FIELDS = ["source_row", "record_id", "reasons"]
 OAK_COUNT_FIELDS = ["species", "count"]
 
-#This is the usual way to run the script in this chapter. It starts a fresh process and works whether or not you have previously opened IPython.
 
 def load_records(path: Path = INPUT_PATH) -> list[dict[str, str]]:
-    """Load survey records and check that the published columns are present."""
+    """Read the survey and check its column names."""
     with path.open(newline="", encoding="utf-8") as source:
         reader = csv.DictReader(source)
         if reader.fieldnames != INPUT_FIELDS:
@@ -41,20 +41,109 @@ def validate_record(
     source_row: int,
     accepted_ids: set[str],
 ) -> tuple[dict[str, str] | None, list[str]]:
-    """Return a cleaned record or its ordered rejection reasons."""
-    raise NotImplementedError("Complete the record validation")
+    """Clean one record, or return the reasons it cannot be used."""
+    # Permitted values from the metadata. Each dictionary maps the lowercase
+    # spelling to the canonical spelling, so matching ignores letter case.
+    location_names = {"silwood bottom": "Silwood Bottom",
+                      "nash's field": "Nash's Field",
+                      "manor house": "Manor House",
+                      "reactor wood": "Reactor Wood"}
+    genus_names = {"quercus": "Quercus", "acer": "Acer", "betula": "Betula",
+                   "fagus": "Fagus", "fraxinus": "Fraxinus"}
+    species_names = {"robur": "robur", "petraea": "petraea",
+                     "pseudoplatanus": "pseudoplatanus", "pendula": "pendula",
+                     "sylvatica": "sylvatica", "excelsior": "excelsior"}
+    taxon_pairs = [("Quercus", "robur"), ("Quercus", "petraea"),
+                   ("Acer", "pseudoplatanus"), ("Betula", "pendula"),
+                   ("Fagus", "sylvatica"), ("Fraxinus", "excelsior")]
+
+    # The checks run in the metadata's order, so the reasons are collected
+    # in that order. source_row is not needed here; process_records uses it.
+    reasons = []
+    cleaned = {}
+
+    # record_id: "ST" followed by exactly three digits, not already accepted.
+    record_id = row["record_id"].strip()
+    if record_id == "":
+        reasons.append("missing record_id")
+    else:
+        digit_count = 0
+        for character in record_id[2:]:
+            if character in "0123456789":
+                digit_count += 1
+        id_is_valid = (len(record_id) == 5
+                       and record_id.startswith("ST")
+                       and digit_count == 3)
+        if not id_is_valid:
+            reasons.append("invalid record_id")
+        elif record_id in accepted_ids:
+            reasons.append("duplicate record_id")
+        else:
+            cleaned["record_id"] = record_id
+
+    # Text fields: missing, recognised (stored in canonical form) or invalid.
+    for field in ["location", "genus", "species"]:
+        if field == "location":
+            names = location_names
+        elif field == "genus":
+            names = genus_names
+        else:
+            names = species_names
+        value = row[field].strip()
+        if value == "":
+            reasons.append(f"missing {field}")
+        elif value.lower() in names:
+            cleaned[field] = names[value.lower()]
+        else:
+            reasons.append(f"invalid {field}")
+
+    # Only judge the pair when both names are individually recognised.
+    if "genus" in cleaned and "species" in cleaned:
+        pair = (cleaned["genus"], cleaned["species"])
+        pair_is_permitted = pair in taxon_pairs
+        if not pair_is_permitted:
+            reasons.append("invalid genus/species combination")
+
+    # Numeric fields: missing, not a usable number, out of range, or valid.
+    # The range is only checked once the value is a usable number.
+    for field in ["distance_m", "angle_degrees"]:
+        value = row[field].strip()
+        if value == "":
+            reasons.append(f"missing {field}")
+        else:
+            try:
+                number = float(value)
+            except ValueError:
+                reasons.append(f"invalid {field}")
+            else:
+                if field == "distance_m":
+                    in_range = number > 0 and number <= 100
+                else:
+                    in_range = number > 0 and number < 90
+                # float() accepts "nan" and "inf", but they are not usable.
+                if not math.isfinite(number):
+                    reasons.append(f"invalid {field}")
+                elif in_range:
+                    cleaned[field] = str(number)
+                else:
+                    reasons.append(f"{field} out of range")
+
+    if len(reasons) > 0:
+        return None, reasons
+    # The fields were added in the input column order.
+    return cleaned, []
 
 
 def process_records(
     rows: Iterable[dict[str, str]],
 ) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
-    """Separate accepted records from rejected-row reports."""
-    raise NotImplementedError("Complete the record-processing workflow")i
+    """Sort records into accepted rows and issue reports."""
+    raise NotImplementedError("Write the loop that processes all records")
 
 
 def summarise_oaks(clean_records: Iterable[dict[str, str]]) -> list[dict[str, str]]:
     """Count accepted oak records by species."""
-    raise NotImplementedError("Complete the oak summary")
+    raise NotImplementedError("Count the accepted oak records")
 
 
 def write_csv(
@@ -62,7 +151,7 @@ def write_csv(
     fieldnames: list[str],
     rows: Iterable[dict[str, str]],
 ) -> None:
-    """Replace a CSV file with the supplied rows."""
+    """Write rows to a CSV file, replacing an older copy."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as destination:
         writer = csv.DictWriter(destination, fieldnames=fieldnames)
@@ -71,7 +160,7 @@ def write_csv(
 
 
 def main() -> None:
-    """Run the complete validation workflow."""
+    """Clean the survey and write the three result files."""
     clean_records, issues = process_records(load_records())
     oak_counts = summarise_oaks(clean_records)
 
@@ -94,4 +183,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
