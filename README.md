@@ -172,7 +172,7 @@ sandbox/
 
 - `results/silwood_trees_clean.csv`: accepted records, sorted by `record_id`.
 - `results/silwood_tree_issues.csv`: each rejected row's line number, `record_id`, and the reasons it was rejected.
-- `results/oak_species_counts.csv`: the number of accepted *Quercus* records
+- `results/oak_species_counts.csv`: the number of accepted *Quercus* records for each species
 
 ## Plan
 
@@ -209,4 +209,17 @@ From the project root:
 python3 code/clean_silwood_trees.py   #creates the three files in results/
 python3 code/test_silwood_trees.py    #no output means all tests passed  
 ```
+
+## A useful test
+
+- **Test:** an angle of `89.9` is accepted but `90` is rejected.
+- **Reason:** the metadata says angles must be less than 90.
+- **Fault it would reveal:** writing `<=` instead of `<` in the angle check, which would wrongly accept 90.
+
+## Limitations
+
+- Misspelt names (e.g. `Quercuss`) are rejected rather than corrected, as the metadata requires, so some usable records are lost.
+- When two rows share a `record_id`, the first valid one is kept and the later one rejected, even if the later one is the correct record.
+- The permitted locations and taxa are written into `validate_record`, so a new site or species means editing the code.
+- For an invalid `record_id` (e.g. `TREE27`), the issues file keeps the ID as written. The metadata doesn't say clearly whether an invalid ID counts as "present".
 
