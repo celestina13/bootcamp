@@ -3,7 +3,14 @@
 """Checks for the functions in clean_silwood_trees.py."""
 
 import clean_silwood_trees
-from clean_silwood_trees import validate_record
+from clean_silwood_trees import (
+    INPUT_PATH,
+    RESULTS_DIR,
+    main,
+    process_records,
+    summarise_oaks,
+    validate_record,
+)
 
 
 def make_row():
@@ -16,6 +23,15 @@ def make_row():
         "distance_m": "12.5",
         "angle_degrees": "35",
     }
+
+
+def read_lines(path):
+    """Return the lines of a text file as a list."""
+    lines = []
+    with open(path, "r") as f:
+        for line in f:
+            lines.append(line)
+    return lines
 
 
 #Checking that importing the cleaner doesn't run it
@@ -134,5 +150,83 @@ reasons = validate_record(row, 2, set())[1]
 assert reasons == ["invalid location", "missing genus", "missing species",
                    "invalid distance_m", "missing angle_degrees"], (
     f"several problems: got {reasons}")
+
+#Checking process_records: line numbers, duplicates, sorting and the reasons
+first = make_row()
+first["record_id"] = "ST002"
+duplicate = make_row()
+duplicate["record_id"] = "ST002"
+second = make_row()
+second["record_id"] = "ST001"
+bad = make_row()
+bad["record_id"] = ""
+bad["location"] = "Old Orchard"
+clean, issues = process_records([first, duplicate, second, bad])
+assert len(clean) == 2
+assert clean[0]["record_id"] == "ST001", "clean records not sorted"
+assert clean[1]["record_id"] == "ST002"
+assert issues == [
+    {"source_row": "3", "record_id": "ST002",
+     "reasons": "duplicate record_id"},
+    {"source_row": "5", "record_id": "",
+     "reasons": "missing record_id; invalid location"},
+], f"issues: got {issues}"
+
+#A bad row shouldn't block a later good row with the same ID
+invalid_first = make_row()
+invalid_first["distance_m"] = "forty"
+valid_later = make_row()
+clean, issues = process_records([invalid_first, valid_later])
+assert len(clean) == 1, "invalid row reserved its identifier"
+assert issues[0]["source_row"] == "2"
+
+#An empty survey should give nothing back, without crashing
+assert process_records([]) == ([], [])
+
+#Only exact Quercus records should be counted, split by species
+robur = make_row()
+petraea = make_row()
+petraea["species"] = "petraea"
+ash = make_row()
+ash["genus"] = "Fraxinus"
+ash["species"] = "excelsior"
+summary = summarise_oaks([robur, petraea, robur, ash])
+assert summary == [{"species": "petraea", "count": "1"},
+                   {"species": "robur", "count": "2"}], f"got {summary}"
+
+#A near match like Quercuss isn't an oak
+near_match = make_row()
+near_match["genus"] = "Quercuss"
+assert summarise_oaks([near_match]) == []
+
+#It also gets rejected before it reaches the summary
+clean, issues = process_records([near_match])
+assert summarise_oaks(clean) == []
+
+#No oaks should give an empty summary
+assert summarise_oaks([ash]) == []
+assert summarise_oaks([]) == []
+
+#Running the program twice should give the same files, and the raw survey
+#shouldn't change
+raw_before = read_lines(INPUT_PATH)
+output_names = ["silwood_trees_clean.csv",
+                "silwood_tree_issues.csv",
+                "oak_species_counts.csv"]
+main()
+first_run = []
+for name in output_names:
+    first_run.append(read_lines(RESULTS_DIR / name))
+main()
+second_run = []
+for name in output_names:
+    second_run.append(read_lines(RESULTS_DIR / name))
+assert first_run == second_run, "second run gave different outputs"
+assert read_lines(INPUT_PATH) == raw_before, "raw survey was changed"
+
+#Checking the outputs match what I worked out by hand
+assert len(first_run[0]) == 25, "expected a header and 24 clean records"
+assert len(first_run[1]) == 13, "expected a header and 12 issues"
+assert first_run[2] == ["species,count\n", "petraea,4\n", "robur,4\n"]
 
 print("All tests passed")
