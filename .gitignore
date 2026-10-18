@@ -1,2 +1,6 @@
 sandbox/
 results/
+__pycache__/
+.Rhistory
+*~
+*#
