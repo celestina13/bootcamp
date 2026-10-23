@@ -64,3 +64,17 @@ counts <- as.matrix(TempData[, species])
 print(paste("Blank counts converted to 0:", sum(counts == "")))
 counts[counts == ""] <- "0"
 
+#Reshape to long form, with one row for each species in each quadrat
+MyWrangledData <- data.frame(
+  TempData[rep(seq_len(nrow(TempData)), times = length(species)), design_cols],
+  Species = rep(species, each = nrow(TempData)),
+  Count = as.numeric(as.vector(counts)),
+  stringsAsFactors = FALSE
+)
+rownames(MyWrangledData) <- NULL
+
+#Put the treatments in month order: March, May, October
+MyWrangledData$Cultivation <- factor(MyWrangledData$Cultivation,
+                                     levels = c("march", "may", "october"),
+                                     labels = c("March", "May", "October"))
+                                     
