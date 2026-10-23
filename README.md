@@ -1,7 +1,8 @@
-# Assignment 1
+# Bootcamp Assignments
 
-Celestina Hall (ceh121@ic.ac.uk), October 2026
 Author: Celestina Hall (ceh121@ic.ac.uk)
+
+# Assignment 1
 
 UNIX and shell scripting coursework: the FASTA practical, an improved
 tabtocsv.sh, and a new csvtospace.sh.
@@ -147,8 +148,6 @@ inside a field will split it in two.
 
 # Assignment 2
 
-Author: Celestina Hall (ceh121@ic.ac.uk)
-
 Coursework for the MQB computing bootcamp. Tree survey practical. Python program taht checks tree survey records, keeps the valid ones, reports the rejected ones, and counts oak species.
 
 ## Project layout 
@@ -222,4 +221,6 @@ python3 code/test_silwood_trees.py    #no output means all tests passed
 - When two rows share a `record_id`, the first valid one is kept and the later one rejected, even if the later one is the correct record.
 - The permitted locations and taxa are written into `validate_record`, so a new site or species means editing the code.
 - For an invalid `record_id` (e.g. `TREE27`), the issues file keeps the ID as written. The metadata doesn't say clearly whether an invalid ID counts as "present".
+
+# Assignment 3
 
