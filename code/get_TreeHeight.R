@@ -59,6 +59,15 @@ return (invisible(TRUE))
 
 #Get the input file name from the command line
 args <- commandArgs(trailingOnly = TRUE)
+usage <- "Usage: Rscript code/get_TreeHeight.R data/<file>.csv"
+
+#Check exactly one file was given
+if (length(args) == 0) {
+  stop(paste("No input file given.", usage))
+} else if (length(args) > 1) {
+  stop(paste("Expected exactly one input file, received ", length(args), ". ", usage, sep = ""))
+}
+
 input_file <- args[1]
 
 #Read the tree data from the file given
