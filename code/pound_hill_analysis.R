@@ -149,21 +149,9 @@ RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
 #Save the figure
 ggsave("results/pound_hill_plot_richness.pdf", RichnessFig, width = 6, height = 4.5)
 
-#Confirm success
-print("Plot richness table and figure written to results/")
-
-#Plot mean richness for each plot by treatment
-RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
-  stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
-  geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
-  ylim(0, NA) +
-  labs(x = "Month of cultivation treatment",
-       y = "Mean species richness per quadrat",
-       shape = "Block") +
-  theme_classic()
-
-#Save the figure
-ggsave("results/pound_hill_plot_richness.pdf", RichnessFig, width = 6, height = 4.5)
-
-#Confirm success
-print("Plot richness table and figure written to results/")
+#Interpretation
+#May has the highest typical richness, although there is quite a lot of variation 
+#between plots in each treatment. The ranges also overlap, and there are only four 
+#plots per treatment. Therefore, we cannot say for sure that cultivation timing caused 
+#the differences, as other factors, such as soil type, slope or previous land use, 
+#may also have affected the results.
