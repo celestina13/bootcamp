@@ -100,3 +100,36 @@ n_plots <- length(unique(MyWrangledData$Plot))
 print(paste("Species:", n_species, " Quadrats:", n_quadrats, " Plots:", n_plots))
 head(MyWrangledData)
 
+#Calculate species richness in each quadrat (species with a count above 0)
+MyWrangledData$Present <- MyWrangledData$Count > 0
+QuadratRichness <- aggregate(Present ~ Cultivation + Block + Plot + Quadrat,
+                             data = MyWrangledData, FUN = sum)
+names(QuadratRichness)[names(QuadratRichness) == "Present"] <- "Richness"
+
+#Show how many quadrats were sampled in each plot
+table(factor(QuadratRichness$Plot, levels = 1:12))
+
+#Calculate mean richness for each plot
+#Plots have different numbers of quadrats, so averaging within plots first
+#stops plots with more quadrats having more influence
+PlotRichness <- aggregate(Richness ~ Cultivation + Block + Plot,
+                          data = QuadratRichness, FUN = mean)
+names(PlotRichness)[names(PlotRichness) == "Richness"] <- "MeanRichness"
+
+#Sort by treatment and plot number
+PlotRichness <- PlotRichness[order(PlotRichness$Cultivation,
+                                   as.numeric(PlotRichness$Plot)), ]
+rownames(PlotRichness) <- NULL
+
+#Check each of the 12 plots appears exactly once
+if (nrow(PlotRichness) != 12 || any(duplicated(PlotRichness$Plot))) {
+  stop("Plot table should have each of the 12 plots exactly once")
+}
+PlotRichness
+
+#Create the results folder if it doesn't exist yet
+dir.create("results", showWarnings = FALSE)
+
+#Save the plot mean richness table
+write.csv(PlotRichness, "results/pound_hill_plot_richness.csv", row.names = FALSE)
+
