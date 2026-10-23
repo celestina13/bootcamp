@@ -70,6 +70,14 @@ if (length(args) == 0) {
 
 input_file <- args[1]
 
+#Check the file exists and can be read
+if (!file.exists(input_file)) {
+  stop(paste("Input file not found:", input_file))
+}
+if (file.access(input_file, 4) != 0) {
+  stop(paste("Input file is not readable:", input_file))
+}
+
 #Read the tree data from the file given
 MyData <- read.csv(input_file, header = TRUE)
 
