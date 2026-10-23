@@ -77,4 +77,26 @@ rownames(MyWrangledData) <- NULL
 MyWrangledData$Cultivation <- factor(MyWrangledData$Cultivation,
                                      levels = c("march", "may", "october"),
                                      labels = c("March", "May", "October"))
-                                     
+
+#Give each quadrat a unique ID from its cultivation, block, plot and quadrat
+MyWrangledData$QuadratID <- paste(MyWrangledData$Cultivation, MyWrangledData$Block,
+                                  MyWrangledData$Plot, MyWrangledData$Quadrat, sep = "_")
+
+#Check that all counts are numbers of 0 or more
+if (!is.numeric(MyWrangledData$Count) || any(is.na(MyWrangledData$Count)) ||
+    any(MyWrangledData$Count < 0)) {
+  stop("Counts must be numbers of 0 or more")
+}
+
+#Check every quadrat belongs to March, May or October
+if (any(is.na(MyWrangledData$Cultivation))) {
+  stop("Unexpected cultivation treatment label")
+}
+
+#Count the number of species, quadrats and plots
+n_species <- length(unique(MyWrangledData$Species))
+n_quadrats <- length(unique(MyWrangledData$QuadratID))
+n_plots <- length(unique(MyWrangledData$Plot))
+print(paste("Species:", n_species, " Quadrats:", n_quadrats, " Plots:", n_plots))
+head(MyWrangledData)
+
