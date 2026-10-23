@@ -17,6 +17,9 @@
 #Clear the workspace so the script only uses objects it creates
 rm(list = ls())
 
+#Load ggplot2 for the figure
+library(ggplot2)
+
 data_file <- "data/pound_hill_data.csv"
 meta_file <- "data/pound_hill_meta_data.csv"
 
@@ -133,3 +136,34 @@ dir.create("results", showWarnings = FALSE)
 #Save the plot mean richness table
 write.csv(PlotRichness, "results/pound_hill_plot_richness.csv", row.names = FALSE)
 
+#Plot mean richness for each plot by treatment
+RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
+  stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
+  geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
+  ylim(0, NA) +
+  labs(x = "Month of cultivation treatment",
+       y = "Mean species richness per quadrat",
+       shape = "Block") +
+  theme_classic()
+
+#Save the figure
+ggsave("results/pound_hill_plot_richness.pdf", RichnessFig, width = 6, height = 4.5)
+
+#Confirm success
+print("Plot richness table and figure written to results/")
+
+#Plot mean richness for each plot by treatment
+RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
+  stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
+  geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
+  ylim(0, NA) +
+  labs(x = "Month of cultivation treatment",
+       y = "Mean species richness per quadrat",
+       shape = "Block") +
+  theme_classic()
+
+#Save the figure
+ggsave("results/pound_hill_plot_richness.pdf", RichnessFig, width = 6, height = 4.5)
+
+#Confirm success
+print("Plot richness table and figure written to results/")
