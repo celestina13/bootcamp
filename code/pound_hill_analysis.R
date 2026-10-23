@@ -149,9 +149,53 @@ RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
 #Save the figure
 ggsave("results/pound_hill_plot_richness.pdf", RichnessFig, width = 6, height = 4.5)
 
+#Calculate total abundance in each quadrat (sum of all species counts)
+QuadratAbundance <- aggregate(Count ~ Cultivation + Block + Plot + Quadrat,
+                              data = MyWrangledData, FUN = sum)
+names(QuadratAbundance)[names(QuadratAbundance) == "Count"] <- "Abundance"
+
+#Calculate mean abundance for each plot
+PlotAbundance <- aggregate(Abundance ~ Cultivation + Block + Plot,
+                           data = QuadratAbundance, FUN = mean)
+names(PlotAbundance)[names(PlotAbundance) == "Abundance"] <- "MeanAbundance"
+
+#Put richness and abundance side by side for each plot
+PlotSummary <- merge(PlotRichness, PlotAbundance)
+PlotSummary <- PlotSummary[order(PlotSummary$Cultivation,
+                                 as.numeric(PlotSummary$Plot)), ]
+rownames(PlotSummary) <- NULL
+PlotSummary
+
+#Compare the treatment medians for richness and abundance
+aggregate(cbind(MeanRichness, MeanAbundance) ~ Cultivation,
+          data = PlotSummary, FUN = median)
+
+#Save the plot-level richness and abundance table
+write.csv(PlotSummary, "results/pound_hill_plot_abundance.csv", row.names = FALSE)
+
+#Plot mean abundance for each plot by treatment
+#Each point is one plot, shaped by block, and the line is the treatment median
+AbundanceFig <- ggplot(PlotSummary, aes(x = Cultivation, y = MeanAbundance)) +
+  stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
+  geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
+  ylim(0, NA) +
+  labs(x = "Month of cultivation treatment",
+       y = "Mean number of plants per quadrat",
+       shape = "Block") +
+  theme_classic()
+
+#Save the abundance figure
+ggsave("results/pound_hill_plot_abundance.pdf", AbundanceFig, width = 6, height = 4.5)
+
 #Interpretation
-#May has the highest typical richness, although there is quite a lot of variation 
-#between plots in each treatment. The ranges also overlap, and there are only four 
-#plots per treatment. Therefore, we cannot say for sure that cultivation timing caused 
-#the differences, as other factors, such as soil type, slope or previous land use, 
+#May has the highest typical richness, although there is quite a lot of variation
+#between plots in each treatment. The ranges also overlap, and there are only four
+#plots per treatment. Therefore, we cannot say for sure that cultivation timing caused
+#the differences, as other factors, such as soil type, slope or previous land use,
 #may also have affected the results.
+
+#Abundance shows a different pattern to richness. October has the most plants
+#but the fewest species. This suggests a few species dominate the October plots,
+#so a plot can have lots of plants but low diversity.
+#This may be because soem species, such as clonal grasses, recover quickly
+#and outcompete others for light and space.
