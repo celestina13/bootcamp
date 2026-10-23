@@ -23,8 +23,7 @@ TreeHeight <- function(degrees, distance) {
 }
 
 #Checks that the tree data meet the assumptions of the height calculation
-#Stops the script with a clear error message if any check fails, so bad
-#inputa are caught 
+#Stops the script with a clear error message if any check fails 
 check_tree_data <- function(MyData) {
 
   #Check that the required columns are present
@@ -64,4 +63,7 @@ check_tree_data <- function(MyData) {
 MyData <- read.csv("data/trees.csv", header = TRUE)
 
 check_tree_data(MyData)
+
+#Calculate the height of every tree
+MyData$height_m <- TreeHeight(MyData$Angle.degrees, MyData$Distance.m)
 
