@@ -1,7 +1,8 @@
-# This script analyses how mean plant species richness per quadrat varies
+# This script analyses how mean plant species richness and total abundance per quadrat vary
 # among the March, May and October cultivation treatments at Pound Hill
 
 # Richness = the number of species with a count above 0 in a quadrat
+# Abundance = the total number of plants (sum of all species counts) in a quadrat
 # Plots are the treatment replicates, so quadrat richness is averaged
 # within each plot before treatments are compared
 
@@ -10,8 +11,9 @@
 #   Rscript code/pound_hill_analysis.R
 
 # Input:  data/pound_hill_data.csv and data/pound_hill_meta_data.csv (kept unchanged)
-# Output: results/pound_hill_plot_richness.csv (one row per plot)
-#         results/pound_hill_plot_richness.pdf (plot values by treatment)
+# Output: results/pound_hill_plot_richness.csv and .pdf
+#         results/pound_hill_plot_abundance.csv and .pdf 
+
 # Needs the ggplot2 package for the figure
 
 #Clear the workspace so the script only uses objects it creates
@@ -188,6 +190,7 @@ AbundanceFig <- ggplot(PlotSummary, aes(x = Cultivation, y = MeanAbundance)) +
 ggsave("results/pound_hill_plot_abundance.pdf", AbundanceFig, width = 6, height = 4.5)
 
 #Interpretation
+
 #May has the highest typical richness, although there is quite a lot of variation
 #between plots in each treatment. The ranges also overlap, and there are only four
 #plots per treatment. Therefore, we cannot say for sure that cultivation timing caused
