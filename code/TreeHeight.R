@@ -54,7 +54,7 @@ check_tree_data <- function(MyData) {
     stop("Angle must be between 0 and 90 degrees")
   }
 
-  return (TRUE)
+  return (invisible(TRUE))
 }
 
 #Read the tree data. The path is relative to the project root,
