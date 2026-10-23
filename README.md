@@ -222,5 +222,62 @@ python3 code/test_silwood_trees.py    #no output means all tests passed
 - The permitted locations and taxa are written into `validate_record`, so a new site or species means editing the code.
 - For an invalid `record_id` (e.g. `TREE27`), the issues file keeps the ID as written. The metadata doesn't say clearly whether an invalid ID counts as "present".
 
+
+
 # Assignment 3
+
+## Tree heights practical
+
+Calculates tree heights using `height = distance * tan(angle in radians)`.
+Run everything from the project root (`bootcamp/`).
+
+### TreeHeight.R
+
+Reads `data/trees.csv`, checks the data, calculates the height of every tree and saves the results.
+
+```bash
+Rscript code/TreeHeight.R
+```
+
+- Input: `data/trees.csv`
+- Output: `results/TreeHts.csv`
+- Checked row 1 (*Populus tremula*): 31.67 * tan(41.28°) = 27.80 m, matching the output
+
+### get_TreeHeight.R
+
+Does the same calculation, but for any CSV file with the same three columns, given on the command line.
+
+```bash
+Rscript code/get_TreeHeight.R data/trees.csv
+```
+
+- Output: `results/<input name>_treeheights.csv`
+- Limitation: two inputs with the same file name write to the same output file
+- browser() check on row 5 (*Betula pendula*): 45.47 * tan(38.35°) = 35.97 m, matching the script
+
+### run_get_TreeHeight.sh
+
+Tests `get_TreeHeight.R` by running it on `data/trees.csv`, and stops if the R script fails.
+
+```bash
+bash code/run_get_TreeHeight.sh
+```
+
+
+## Pound Hill species richness
+
+Analyses how mean plant species richness per quadrat varies among the
+March, May and October cultivation treatments at Pound Hill.
+
+```bash
+Rscript code/pound_hill_analysis.R
+```
+
+- Inputs: `data/pound_hill_data.csv` and `data/pound_hill_meta_data.csv` (kept unchanged)
+- Needs the ggplot2 package
+- Outputs: `results/pound_hill_plot_richness.csv` and `.pdf` (mean richness for each plot),
+  and `results/pound_hill_plot_abundance.csv` and `.pdf` (mean richness and abundance for each plot)
+- Checked: running the script twice from the project root gave the same table (12 plots) and figure both times
+- The interpretation is in comments at the end of the script
+
 
