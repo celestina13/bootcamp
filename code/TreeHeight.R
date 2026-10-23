@@ -67,3 +67,12 @@ check_tree_data(MyData)
 #Calculate the height of every tree
 MyData$height_m <- TreeHeight(MyData$Angle.degrees, MyData$Distance.m)
 
+#Create the results folder if it doesn't exist yet
+#showWarnings = FALSE stops a warning when the folder is already exists
+dir.create("results", showWarnings = FALSE)
+
+#Save the three original columns and the new height_m column
+write.csv(MyData, "results/TreeHts.csv", row.names = FALSE)
+
+#Confirm success
+print("Script complete!")
