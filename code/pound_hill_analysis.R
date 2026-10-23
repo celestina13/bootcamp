@@ -38,3 +38,29 @@ str(MyData)
 MyData[1:6, 1:6]
 str(MyMetaData)
 MyMetaData
+
+#Check the metadata says blank counts are observed absences (zeros)
+blank_rule <- MyMetaData$Description[MyMetaData$FieldName == "BlankSpeciesCount"]
+print(blank_rule)
+if (!grepl("zero", blank_rule)) {
+  stop("Metadata does not say blanks are zeros")
+}
+
+#Check the first four rows are Cultivation, Block, Plot and Quadrat
+design_cols <- c("Cultivation", "Block", "Plot", "Quadrat")
+if (!identical(MyData[1:4, 1], design_cols)) {
+  stop("First four rows are not Cultivation, Block, Plot and Quadrat")
+}
+
+#Turn the data round so each quadrat is a row and each species is a column
+MyData <- t(MyData)
+TempData <- as.data.frame(MyData[-1, ], stringsAsFactors = FALSE)
+colnames(TempData) <- MyData[1, ]
+rownames(TempData) <- NULL
+
+#Replace blank species counts with zeros
+species <- setdiff(colnames(TempData), design_cols)
+counts <- as.matrix(TempData[, species])
+print(paste("Blank counts converted to 0:", sum(counts == "")))
+counts[counts == ""] <- "0"
+
