@@ -4,7 +4,7 @@
 
 #1
 
-wc -l ../data/fasta/*.fasta
+wc -l data/fasta/*.fasta
 
 #Explanation: prints the line count of each of the three FASTA files
 #but wc -l counts newline characters, so the last line without a newline at the end is not counted
@@ -13,37 +13,34 @@ wc -l ../data/fasta/*.fasta
 
 #2
 
-tail -n +2 ../data/fasta/e_coli.fasta
+tail -n +2 data/fasta/e_coli.fasta
 
 #Explanation: tail -n +2 prints the entire file from line 2
-#line 1 is the header, so should be excluded, as it is not part of the DNA sequence 
+#line 1 is the header, so should be excluded, as it is not part of the DNA sequence
 
 #3
 
-tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | wc -c
+tail -n +2 data/fasta/e_coli.fasta | tr -d "\n" | wc -c
 
 #Explanation: tail -n +2 skips the header line
-#tr -d "\n" removes the newlines, because they aren't bases 
+#tr -d "\n" removes the newlines, because they aren't bases
 #wc -c counts what's remaining
-#result = the no of sequence positions, including ambiguous symbols (e.g N)
+#result = the no of sequence positions, including ambiguous symbols (in this file, one Y and one R)
 
 
 #4
 
-tail -n +2 ../data/fasta/e_coli.fasta | tr -d "\n" | grep -o "ATGC" | wc -l
+tail -n +2 data/fasta/e_coli.fasta | tr -d "\n" | grep -o "ATGC" | wc -l
 
-#Explanation: As in Q3, header and newlines are removed, so matches split across line breaks aren't missed 
-#grep -o prints each ATGC match on its own line and wc -l counts them 
+#Explanation: As in Q3, header and newlines are removed, so matches split across line breaks aren't missed
+#grep -o prints each ATGC match on its own line and wc -l counts them
 #result = matches of "ATGC" in the genome
 
 
 #5
 
-echo "$(tail -n +2 ../data/fasta/e_coli.fasta | grep -o '[AT]' | wc -l) / $(tail -n +2 ../data/fasta/e_coli.fasta | grep -o '[GC]' | wc -l)" | bc -l
+echo "$(tail -n +2 data/fasta/e_coli.fasta | grep -o '[AT]' | wc -l) / $(tail -n +2 data/fasta/e_coli.fasta | grep -o '[GC]' | wc -l)" | bc -l
 
 #Explanation: Counts every A and T in the genome and every G and C in the genome, skipping the header line for both
 #echo writes the two counts as a division and bc -l calculates it as a decimal
 #result = no of A and T bases divided by no of G and C bases
-
-
-
