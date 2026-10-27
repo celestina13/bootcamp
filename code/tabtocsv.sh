@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: Celestina Hall ceh121@ic.ac.uk
 # Script: tabtocsv.sh
-# Desc: substitute the tabs in a file with commas and save the output as ../results/<input-filename>.csv
+# Desc: substitute the tabs in a file with commas and save the output as results/<input-filename>.csv
 # Arguments: 1 (tab delimited file)
 # Date: Oct 2026
 
@@ -19,10 +19,10 @@ else
     exit 1
 fi
 
-#Output goes in ../results/, named after the input file
+#Run from the project root: output goes in results/, named after the input file
 #Folder created if it does not exist and any existing file is overwritten
-output_file="../results/$(basename "$1").csv"
-mkdir -p ../results
+output_file="results/$(basename "$1").csv"
+mkdir -p results
 
 #Convert tabs to commas and save to output file
 #Removed -s from tr so empty fields are not removed, to prevent data loss/corruption

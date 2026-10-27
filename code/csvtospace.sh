@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: Celestina Hall ceh121@ic.ac.uk
 # Script: csvtospace.sh
-# Desc: substitute the commas in a file with spaces and save the output as ../results/<input-filename>.txt
+# Desc: substitute the commas in a file with spaces and save the output as results/<input-filename>.txt
 # Arguments: 1 (comma delimited file)
 # Date: Oct 2026
 # Note: simple comma substitution only, see README.md for limitations
@@ -20,10 +20,10 @@ else
     exit 1
 fi
 
-#Output goes in ../results/, named after the input file
+#Run from the project root, output goes in results/, named after the input file
 #Folder created if it does not exist; any existing file is overwritten
-output_file="../results/$(basename "$1").txt"
-mkdir -p ../results
+output_file="results/$(basename "$1").txt"
+mkdir -p results
 
 #Convert commas to spaces and save to output file
 tr "," " " < "$1" > "$output_file"
