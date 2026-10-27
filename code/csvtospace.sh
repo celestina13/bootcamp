@@ -23,7 +23,12 @@ fi
 #Run from the project root, output goes in results/, named after the input file
 #Folder created if it does not exist; any existing file is overwritten
 output_file="results/$(basename "$1").txt"
-mkdir -p results
+
+#Stop if the results/ folder cannot be created
+if ! mkdir -p results; then
+    printf 'Error: could not create results/\n' >&2
+    exit 1
+fi
 
 #Convert commas to spaces and save to output file
 tr "," " " < "$1" > "$output_file"
