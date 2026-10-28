@@ -64,7 +64,7 @@ for field in ["record_id", "location", "genus", "species",
     assert record is None
     assert reasons == [f"missing {field}"], f"missing {field}: got {reasons}"
 
-#Values not in the metadata should be rejected, not corrected
+#Values not in the metadata should be rejected
 row = make_row()
 row["location"] = "Old Orchard"
 assert validate_record(row, 2, set())[1] == ["invalid location"]
@@ -206,6 +206,23 @@ assert summarise_oaks(clean) == []
 #No oaks should give an empty summary
 assert summarise_oaks([ash]) == []
 assert summarise_oaks([]) == []
+
+#Data flow check: one valid and one invalid oak record go through
+#process_records(), then the cleaned list goes to summarise_oaks().
+#The invalid record would add a petraea row if it reached the summary.
+valid_oak = make_row()
+valid_oak["record_id"] = "ST010"
+invalid_oak = make_row()
+invalid_oak["record_id"] = "ST011"
+invalid_oak["species"] = "petraea"
+invalid_oak["angle_degrees"] = "95"
+clean, issues = process_records([valid_oak, invalid_oak])
+assert len(clean) == 1, f"expected one clean record, got {clean}"
+assert clean[0]["record_id"] == "ST010", f"got {clean}"
+assert issues == [{"source_row": "3", "record_id": "ST011",
+                   "reasons": "angle_degrees out of range"}], f"got {issues}"
+assert summarise_oaks(clean) == [{"species": "robur", "count": "1"}], (
+    "invalid record reached the oak summary")
 
 #Running the program twice should give the same files, and the raw survey
 #shouldn't change
