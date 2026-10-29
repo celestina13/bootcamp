@@ -246,4 +246,14 @@ assert len(first_run[0]) == 25, "expected a header and 24 clean records"
 assert len(first_run[1]) == 13, "expected a header and 12 issues"
 assert first_run[2] == ["species,count\n", "petraea,4\n", "robur,4\n"]
 
+#Checking the contents of the files and not just how many lines they have
+assert first_run[0][0] == "record_id,location,genus,species,distance_m,angle_degrees\n"
+assert first_run[0][1] == "ST001,Silwood Bottom,Quercus,robur,12.5,35.0\n", (
+    f"first clean record: got {first_run[0][1]}")
+assert first_run[1][0] == "source_row,record_id,reasons\n"
+assert "27,ST004,duplicate record_id\n" in first_run[1], "duplicate not reported"
+assert first_run[1][-1] == ("37,ST036,invalid location; missing genus; "
+                            "missing species; invalid distance_m; "
+                            "missing angle_degrees\n"), f"got {first_run[1][-1]}"
+
 print("All tests passed")
