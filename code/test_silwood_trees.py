@@ -37,10 +37,13 @@ def read_lines(path):
 #Checking that importing the cleaner doesn't run it
 assert clean_silwood_trees.__name__ == "clean_silwood_trees"
 
-#A normal valid row should be accepted with no reasons
+#Checking the whole cleaned record, so a wrong field shows up here in
+#validate_record rather than later in the output files
 record, reasons = validate_record(make_row(), 2, set())
 assert reasons == [], f"valid row rejected: {reasons}"
-assert record["record_id"] == "ST001"
+assert record == {"record_id": "ST001", "location": "Silwood Bottom",
+                  "genus": "Quercus", "species": "robur",
+                  "distance_m": "12.5", "angle_degrees": "35.0"}, f"got {record}"
 
 #Extra spaces and odd capitals should be cleaned up to the canonical spelling
 row = make_row()
