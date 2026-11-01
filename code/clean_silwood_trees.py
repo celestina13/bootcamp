@@ -29,6 +29,8 @@ def load_records(path: Path = INPUT_PATH) -> list[dict[str, str]]:
     """Read the survey and check its column names."""
     with path.open(newline="", encoding="utf-8") as source:
         reader = csv.DictReader(source)
+        #Raise an error if the column names don't match the expected ones, so an
+        #unexpected or altered file is reported instead of being cleaned incorrectly
         if reader.fieldnames != INPUT_FIELDS:
             raise ValueError(
                 f"Expected columns {INPUT_FIELDS}, found {reader.fieldnames}"
@@ -68,6 +70,8 @@ def validate_record(
         reasons.append("missing record_id")
     else:
         digit_count = 0
+        #Checked against 0-9 directly, because str.isdigit() also accepts
+        #characters like "²" that aren't valid in an ID
         for character in record_id[2:]:
             if character in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
                 digit_count += 1
@@ -120,10 +124,12 @@ def validate_record(
                     in_range = number > 0 and number <= 100
                 else:
                     in_range = number > 0 and number < 90
-                # float() accepts "nan" and "inf", but they are not usable.
+                #float() accepts "nan" and "inf", but they are not usable.
                 if not math.isfinite(number):
                     reasons.append(f"invalid {field}")
                 elif in_range:
+                    #Stored from the float so every number has the same format,
+                    #e.g. "35" and "35.00" both become "35.0"
                     cleaned[field] = str(number)
                 else:
                     reasons.append(f"{field} out of range")
@@ -148,7 +154,7 @@ def process_records(
         source_row += 1
         clean_record, reasons = validate_record(row, source_row, accepted_ids)
         if clean_record is None:
-            # Join the reasons with "; ", keeping the metadata's order.
+            #Join the reasons with "; ", keeping the metadata's order.
             reasons_text = reasons[0]
             for reason in reasons[1:]:
                 reasons_text = reasons_text + "; " + reason
@@ -158,12 +164,13 @@ def process_records(
                 "reasons": reasons_text,
             })
         else:
-            #Remembers the identifier so a later duplicate is rejected.
+            #Only accepted records have their ID added here. A rejected row's ID
+            #is not added, so a later valid row with that ID isn't marked as a duplicate
             accepted_ids.add(clean_record["record_id"])
             records_by_id[clean_record["record_id"]] = clean_record
 
-    #Accepted records are written sorted by record_id (issues stay in)
-    #source-row order because they were added in that order.
+    #Accepted records are written sorted by record_id (issues stay in
+    #source-row order because they were added in that order).
     clean_records = []
     for record_id in sorted(accepted_ids):
         clean_records.append(records_by_id[record_id])
