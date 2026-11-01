@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Validate and clean the synthetic Silwood tree survey."""
+"""Validate and clean the synthetic Silwood tree survey.
+
+Author: Celestina Hall (ceh121@ic.ac.uk)
+Script: clean_silwood_trees.py
+Run from the project root: python3 code/clean_silwood_trees.py
+Input: data/silwood_trees_raw.csv
+Outputs: results/silwood_trees_clean.csv, results/silwood_tree_issues.csv
+         and results/oak_species_counts.csv
+"""
 
 from __future__ import annotations
 

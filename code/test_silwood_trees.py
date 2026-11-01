@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 
-"""Checks for the functions in clean_silwood_trees.py."""
+"""Checks for the functions in clean_silwood_trees.py.
+
+Author: Celestina Hall (ceh121@ic.ac.uk)
+Script: test_silwood_trees.py
+Run from the project root: python3 code/test_silwood_trees.py
+Prints "All tests passed" if every check passes. Also runs the cleaner,
+so it writes the three output files to results/.
+"""
 
 import clean_silwood_trees
 from clean_silwood_trees import (
