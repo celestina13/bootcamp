@@ -53,10 +53,10 @@ bash code/tabtocsv.sh data/tab-example.tsv
 ```
 
 Checked from the project root:
-- Normal test: The script correctly processed `data/tab-example.tsv` and produced the expected output with the columns `species,count,site`. The original input file remained unchanged.
-- Boundary test: An empty field (two tabs in a row) became `pine,,B`, so the empty field was kept. A filename containing a space (`sandbox/my file.tsv`) produced `results/my file.tsv.csv`.
-- Invalid input tests: Running the script without an argument or with two arguments displayed the usage message and exited with code 2. Missing files and directories produced an error and exited with code 1 without creating any output. If the `results/` directory could not be created, the script produced an error and exited with code 1.
-- Rerun test: Running the script again produced identical output.
+- Normal test: the script correctly processed `data/tab-example.tsv` and produced the expected output with the columns `species,count,site`. The original input file remained unchanged.
+- Boundary test: an empty field (two tabs in a row) became `pine,,B`, so the empty field was kept. A filename containing a space (`sandbox/my file.tsv`) produced `results/my file.tsv.csv`.
+- Invalid input tests: running the script without an argument or with two arguments displayed the usage message and exited with code 2. Missing files and directories produced an error and exited with code 1 without creating any output. If the `results/` directory could not be created, the script produced an error and exited with code 1.
+- Rerun test: running the script again produced identical output.
 
 ### csvtospace.sh
 
@@ -73,48 +73,98 @@ bash code/csvtospace.sh data/temperatures/1800.csv
 ```
 
 Checked from the project root:
-- Normal test: The script processed `data/temperatures/1800.csv` correctly, with 1,825 lines in both the input and output and no commas remaining. The original file was unchanged.
-- Boundary test: An empty field became two spaces (`pine  B`), so no field was dropped from the line. A filename containing a space (`sandbox/my file.csv`) was handled correctly.
-- Invalid input tests: Missing or extra arguments displayed the usage message and exited with code 2. Missing files, folders or an uncreatable `results/` directory produced an error and exited without creating output.
-- Rerun test: Running the script again produced identical output.
+- Normal test: the script processed `data/temperatures/1800.csv` correctly, with 1,825 lines in both the input and output and no commas remaining. The original file was unchanged.
+- Boundary test: an empty field became two spaces (`pine  B`), so no field was dropped from the line. A filename containing a space (`sandbox/my file.csv`) was handled correctly.
+- Invalid input tests: missing or extra arguments displayed the usage message and exited with code 2. Missing files, folders or an uncreatable `results/` directory produced an error and exited without creating output.
+- Rerun test: running the script again produced identical output.
 
 ### Changes after Assignment 1 feedback
 
-**unixPrac1.txt.** Changed the paths from `../data/fasta/` to `data/fasta/` so
-the commands run from the project root, as the feedback asked, and restored this
-Assignment 1 section. All five answers were unchanged when rerun from the root.
+**unixPrac1.txt**
+- Changed the paths from `../data/fasta/` to `data/fasta/` so the commands run from the project root, and restored this Assignment 1 section. All five answers were unchanged when rerun.
 
-**tabtocsv.sh and csvtospace.sh.** Both scripts assumed they were run from
-`code/` and wrote to `../results`. They now write to `results/` from the project
-root. After the feedback I also added a check that stops each script with an
-error if `results/` cannot be created. I tested an empty field, a filename with a
-space, a rerun and invalid inputs, checking the output contents and location as
-well as the exit status (results above).
+**tabtocsv.sh and csvtospace.sh**
+- Changed the output from `../results` to `results/`, so both scripts run from the project root.
+- Added a check that stops each script with an error if `results/` cannot be created.
+- Tested an empty field, a filename with a space, a rerun and invalid inputs, checking the output contents and location as well as the exit status (results above).
 
 ## Assignment 2: Silwood tree survey (Python)
 
 ### clean_silwood_trees.py
 
-Reads `data/silwood_trees_raw.csv` and writes
-`results/silwood_trees_clean.csv`, `results/silwood_tree_issues.csv` and
-`results/oak_species_counts.csv`.
+Checks each record in the Silwood tree survey against the rules in
+`data/silwood_trees_metadata.md`. Keeps the valid records, reports the rejected
+ones with their reasons, and counts the accepted oak records by species. Reads
+`data/silwood_trees_raw.csv` and writes three files to `results/`:
+
+- `silwood_trees_clean.csv`: accepted records, sorted by `record_id`
+- `silwood_tree_issues.csv`: each rejected row's line number, `record_id` and reasons
+- `oak_species_counts.csv`: the number of accepted *Quercus* records for each species
+
+To run:
 
 ```bash
 python3 code/clean_silwood_trees.py
 ```
 
+Data flow (`main()` runs these steps in order):
+
+1. `load_records()` reads `data/silwood_trees_raw.csv` and checks the column names.
+2. `process_records()` checks each row with `validate_record()` and splits the rows into clean records and issues.
+3. `summarise_oaks()` counts the oaks in the clean records only, so rejected rows are never counted.
+4. `write_csv()` writes the clean records, issues and oak counts to the three output files.
+
+Limitations: both of these follow the metadata rules. Misspelt names (e.g.
+`Quercuss`) are rejected rather than corrected, so some usable records are lost.
+When two rows share a `record_id`, the first valid row is kept and the later one
+is rejected, even if the later one is the correct record.
+
+Checked from the project root:
+- Normal test: 24 clean records, 12 issues, and oak counts of petraea 4 and robur 4, matching what I worked out by hand from the raw data and the metadata.
+- Rerun test: running it twice gave identical files, and the raw survey was unchanged.
+- Boundary and invalid input tests: covered by `test_silwood_trees.py` below.
+
 ### test_silwood_trees.py
 
-Reads `data/silwood_trees_raw.csv` and writes the
-three cleaner outputs to `results/`.
+Tests the functions in `clean_silwood_trees.py`, then runs the whole program and
+checks its output files. Reads `data/silwood_trees_raw.csv` and writes the three
+cleaner outputs to `results/`. Prints "All tests passed" if every check passes;
+otherwise it stops with an `AssertionError` at the first failed check.
+
+To run:
 
 ```bash
 python3 code/test_silwood_trees.py
 ```
 
+What the tests cover:
+- Normal test: a valid record is accepted with every field cleaned correctly, including spaces and capital letters tidied to the metadata spelling.
+- Boundary tests: distances of 0.1 and 100 are accepted but 0 and 100.1 are rejected; angles of 0.1 and 89.9 are accepted but 0 and 90 are rejected.
+- Invalid input tests: each missing field, names not in the metadata, IDs in the wrong format, disallowed genus/species pairs, text, `nan` and `inf` as numbers, duplicate IDs and a row with several problems listing every reason in order.
+- Data flow test: one valid and one invalid oak record go through `process_records()`. The invalid one goes to issues and is not counted by `summarise_oaks()`.
+- Output tests: running the program twice gives identical files, the raw survey is unchanged and the written files have the right headers, line counts and contents.
+
+Checked from the project root: prints "All tests passed".
+
+A future improvement would be to run these checks with pytest so all failures are reported at once.
+
 ### Changes after Assignment 2 feedback
 
-TO DO
+**test_silwood_trees.py**
+- Added a test passing one valid and one invalid oak record through `process_records()` and `summarise_oaks()`. Earlier tests checked each function separately, so nothing showed that a rejected record can't reach the summary. Both records are oaks, so a leak would add a petraea row.
+- Added checks on the contents of the clean and issues files. Previously only line counts were checked, so a wrong value would have passed.
+- Added a check of every field of a cleaned record, so a wrong value is traced to `validate_record()` rather than found later in the output files.
+- Added author and usage information.
+
+**clean_silwood_trees.py**
+- Added comments explaining the reasons for less obvious validation and cleaning steps.
+- Removed repeated code in `summarise_oaks()` and `process_records()`.
+- Added author and usage information.
+
+**README**
+- Added the data-flow explanation above, showing how the raw file becomes the three outputs.
+
+After each change I reran the tests and confirmed the three output files were unchanged.
 
 ## Assignment 3: Tree heights and Pound Hill (R)
 
