@@ -163,9 +163,7 @@ def process_records(
         clean_record, reasons = validate_record(row, source_row, accepted_ids)
         if clean_record is None:
             #Join the reasons with "; ", keeping the metadata's order.
-            reasons_text = reasons[0]
-            for reason in reasons[1:]:
-                reasons_text = reasons_text + "; " + reason
+            reasons_text = "; ".join(reasons)
             issues.append({
                 "source_row": str(source_row),
                 "record_id": row["record_id"].strip(),
@@ -189,13 +187,11 @@ def process_records(
 def summarise_oaks(clean_records: Iterable[dict[str, str]]) -> list[dict[str, str]]:
     """Count accepted oak records by species."""
     oak_counts = {}
-    oak_species = set()
 
     #A record is an oak when its canonical genus is exactly "Quercus"
     for record in clean_records:
         if record["genus"] == "Quercus":
             species = record["species"]
-            oak_species.add(species)
             if species in oak_counts:
                 oak_counts[species] += 1
             else:
@@ -203,7 +199,7 @@ def summarise_oaks(clean_records: Iterable[dict[str, str]]) -> list[dict[str, st
 
     #One row per oak species, sorted by species. No oaks gives an empty list
     summary = []
-    for species in sorted(oak_species):
+    for species in sorted(oak_counts):
         summary.append({"species": species, "count": str(oak_counts[species])})
 
     return summary
