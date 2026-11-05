@@ -31,7 +31,8 @@ check_tree_data <- function(MyData) {
   required <- c("Species", "Distance.m", "Angle.degrees")
   missing_cols <- setdiff(required, names(MyData))
   if (length(missing_cols) > 0) {
-    stop(paste("Missing required column(s):", paste(missing_cols)))
+    #collapse joins the missing column names into one message, separated by commas
+    stop(paste("Missing required column(s):", paste(missing_cols, collapse = ", ")))
   }
 
   #Check that distance and angle are numeric
