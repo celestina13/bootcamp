@@ -18,7 +18,7 @@
 
 TreeHeight <- function(degrees, distance) {
   radians <- degrees * pi / 180      #tan() in R needs radians, not degrees
-  height <- distance * tan(radians)  #height = distance * tan(angle)
+  height <- distance * tan(radians)
   return (height)                    
 }
 
@@ -65,7 +65,7 @@ MyData <- read.csv("data/trees.csv", header = TRUE)
 
 check_tree_data(MyData)
 
-#Calculate the height of every tree
+#TreeHeight() works on whole columns at once, so every tree is done without a loop
 MyData$height_m <- TreeHeight(MyData$Angle.degrees, MyData$Distance.m)
 
 #Create the results folder if it doesn't exist yet
@@ -75,5 +75,4 @@ dir.create("results", showWarnings = FALSE)
 #Save the three original columns and the new height_m column
 write.csv(MyData, "results/TreeHts.csv", row.names = FALSE)
 
-#Confirm success
 print("Script complete!")
