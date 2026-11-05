@@ -49,7 +49,7 @@ check_tree_data <- function(MyData) {
     stop("Distance must be greater that 0 and at most 100")
   }
 
-  #Check that angles are between 0 and 100 metres
+  #Check that angles are between 0 and 90 degrees
   if (any(MyData$Angle.degrees <= 0 | MyData$Angle.degrees >= 90)) {
     stop("Angle must be between 0 and 90 degrees")
   }
@@ -68,7 +68,7 @@ check_tree_data(MyData)
 MyData$height_m <- TreeHeight(MyData$Angle.degrees, MyData$Distance.m)
 
 #Create the results folder if it doesn't exist yet
-#showWarnings = FALSE stops a warning when the folder is already exists
+#showWarnings = FALSE stops a warning when the folder already exists
 dir.create("results", showWarnings = FALSE)
 
 #Save the three original columns and the new height_m column
