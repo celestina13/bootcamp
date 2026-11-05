@@ -46,7 +46,7 @@ check_tree_data <- function(MyData) {
 
   #Check that distances are between 0 and 100 metres
   if (any(MyData$Distance.m <= 0 | MyData$Distance.m > 100)) {
-    stop("Distance must be greater that 0 and at most 100")
+    stop("Distance must be greater than 0 and at most 100")
   }
 
   #Check that angles are between 0 and 90 degrees
