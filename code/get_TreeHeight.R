@@ -1,9 +1,12 @@
+# Author: Celestina Hall (ceh121@ic.ac.uk)
+# Script: get_TreeHeight.R
+
 # This function calculates heights of trees given distance of each tree
-# from its base and angle to its top, using  the trigonometric formula
+# from its base and angle to its top, using the trigonometric formula
 
 # height = distance * tan(radians)
 
-# Arguments
+# TreeHeight() arguments
 # degrees: The angle of elevation of tree
 # distance: The distance from base of tree
 

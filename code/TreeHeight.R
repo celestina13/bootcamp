@@ -1,9 +1,12 @@
-# This function calculates heights of trees given distance of each tree 
-# from its base and angle to its top, using  the trigonometric formula 
+# Author: Celestina Hall (ceh121@ic.ac.uk)
+# Script: TreeHeight.R
+
+# This function calculates heights of trees given distance of each tree
+# from its base and angle to its top, using the trigonometric formula
 
 # height = distance * tan(radians)
 
-# Arguments
+# TreeHeight() arguments
 # degrees: The angle of elevation of tree
 # distance: The distance from base of tree
 
@@ -19,11 +22,11 @@
 TreeHeight <- function(degrees, distance) {
   radians <- degrees * pi / 180      #tan() in R needs radians, not degrees
   height <- distance * tan(radians)
-  return (height)                    
+  return (height)
 }
 
 #Checks that the tree data meet the assumptions of the height calculation
-#Stops the script with a clear error message if any check fails 
+#Stops the script with a clear error message if any check fails
 check_tree_data <- function(MyData) {
 
   #Check that the required columns are present
