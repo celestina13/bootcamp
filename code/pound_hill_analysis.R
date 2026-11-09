@@ -79,9 +79,11 @@ MyWrangledData <- data.frame(
 rownames(MyWrangledData) <- NULL
 
 #Put the treatments in month order: March, May, October
+#The lowercase identifiers are kept so the exported tables match the input;
+#capitalised month names are only used as labels on the figures
 MyWrangledData$Cultivation <- factor(MyWrangledData$Cultivation,
-                                     levels = c("march", "may", "october"),
-                                     labels = c("March", "May", "October"))
+                                     levels = c("march", "may", "october"))
+month_labels <- c(march = "March", may = "May", october = "October")
 
 #Give each quadrat a unique ID from its cultivation, block, plot and quadrat
 MyWrangledData$QuadratID <- paste(MyWrangledData$Cultivation, MyWrangledData$Block,
@@ -142,6 +144,7 @@ write.csv(PlotRichness, "results/pound_hill_plot_richness.csv", row.names = FALS
 RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
   stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
   geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
+  scale_x_discrete(labels = month_labels) +
   ylim(0, NA) +
   labs(x = "Month of cultivation treatment",
        y = "Mean species richness per quadrat",
@@ -180,6 +183,7 @@ write.csv(PlotSummary, "results/pound_hill_plot_abundance.csv", row.names = FALS
 AbundanceFig <- ggplot(PlotSummary, aes(x = Cultivation, y = MeanAbundance)) +
   stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
   geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
+  scale_x_discrete(labels = month_labels) +
   ylim(0, NA) +
   labs(x = "Month of cultivation treatment",
        y = "Mean number of plants per quadrat",
