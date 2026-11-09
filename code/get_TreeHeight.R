@@ -38,6 +38,12 @@ check_tree_data <- function(MyData) {
     stop(paste("Missing required column(s):", paste(missing_cols, collapse = ", ")))
   }
 
+  #Check there is at least one tree, as an empty file would otherwise fail the
+  #numeric check below with a misleading message
+  if (nrow(MyData) == 0) {
+    stop("Input file has no tree records")
+  }
+
   #Check that distance and angle are numeric
   if (!is.numeric(MyData$Distance.m) || !is.numeric(MyData$Angle.degrees)) {
     stop("Distance and angle must be numeric")
