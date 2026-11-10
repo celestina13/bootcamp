@@ -209,5 +209,5 @@ ggsave("results/pound_hill_plot_abundance.pdf", AbundanceFig, width = 6, height 
 #Abundance shows a different pattern to richness. October has the most plants
 #but the fewest species. This suggests a few species dominate the October plots,
 #so a plot can have lots of plants but low diversity.
-#This may be because soem species, such as clonal grasses, recover quickly
+#This may be because some species, such as clonal grasses, recover quickly
 #and outcompete others for light and space.
