@@ -1,3 +1,6 @@
+# Author: Celestina Hall (ceh121@ic.ac.uk)
+# Script: pound_hill_analysis.R
+
 # This script analyses how mean plant species richness and total abundance per quadrat vary
 # among the March, May and October cultivation treatments at Pound Hill
 
@@ -12,7 +15,7 @@
 
 # Input:  data/pound_hill_data.csv and data/pound_hill_meta_data.csv (kept unchanged)
 # Output: results/pound_hill_plot_richness.csv and .pdf
-#         results/pound_hill_plot_abundance.csv and .pdf 
+#         results/pound_hill_plot_abundance.csv and .pdf
 
 # Needs the ggplot2 package for the figure
 
