@@ -11,7 +11,7 @@ says what that script reads and what it may create.
 
 - bash and standard UNIX tools, plus `bc` for question 5 of the FASTA practical (check with `command -v bc`)
 - Python 3
-- R with ggplot2
+- R with ggplot2 (for `pound_hill_analysis.R`)
 
 ## Layout
 
@@ -170,52 +170,111 @@ After each change I reran the tests and confirmed the three output files were un
 
 ### TreeHeight.R
 
-Reads `data/trees.csv` and writes `results/TreeHts.csv`.
+Calculates the height of every tree in `data/trees.csv` from its distance and
+angle, using height = distance × tan(angle in radians). Validates the data first
+and stops with a clear error if a check fails. Writes `results/TreeHts.csv` (the
+three original columns plus `height_m`).
+
+To run:
 
 ```bash
 Rscript code/TreeHeight.R
 ```
 
-Checked:
-- Normal:
-- Invalid:
+It can also be run with `source("code/TreeHeight.R")` from an R session started at the project root.
+
+Checked from the project root:
+- Normal test: 120 trees written. Row 1 (*Populus tremula*, 31.666 m, 41.283°) gives 27.8021 m, matching 31.666 × tan(41.283°) worked out separately.
+- Invalid input tests: an angle of 90, a distance of 0, an empty file and missing columns each stop with a matching error message and no output file is created.
+- Rerun test: running it again produced identical output.
 
 ### get_TreeHeight.R
 
-Reads the CSV you give it and writes
-`results/<input name>_treeheights.csv`.
+A generalised version of `TreeHeight.R` that takes any CSV with the same columns
+as its one command-line argument. Writes `results/<input name>_treeheights.csv`.
+
+To run:
 
 ```bash
 Rscript code/get_TreeHeight.R data/trees.csv
 ```
 
-Checked:
-- Normal:
-- Invalid:
+It has to be run with `Rscript`, because `source()` can't pass the file name.
+
+Limitations: two input files with the same name in different folders write to the same output file.
+
+Checked from the project root:
+- Normal test: `data/trees.csv` gives heights identical to `results/TreeHts.csv` for every tree.
+- Boundary test: a distance of 100 and an angle of 89.9 are accepted.
+- Invalid input tests: no file gives "No input file given", two files give "Expected exactly one input file, received 2", a missing file gives "Input file not found", text as a distance gives "Distance and angle must be numeric", and the angle, distance, empty-file and missing-column cases give the same messages as `TreeHeight.R`. No output file is created in any of these cases.
+- Rerun test: running it again produced identical output.
+- Debugging check: with `browser()` added temporarily, I started R with `R --vanilla --args data/trees.csv`, ran `source("code/get_TreeHeight.R")` and stepped through row 5 (*Betula pendula*): 45.466 × tan(38.349°) = 35.970 m, matching the output. `browser()` was then removed.
+
+`TreeHeight.R` and `get_TreeHeight.R` each keep their own copy of `TreeHeight()`
+and `check_tree_data()`, so each script runs on its own, as the practical sets
+them up as separate scripts.
 
 ### run_get_TreeHeight.sh
 
-Runs `get_TreeHeight.R` on `data/trees.csv`, creating
-`results/trees_treeheights.csv`.
+Runs `get_TreeHeight.R` on `data/trees.csv`, creating `results/trees_treeheights.csv`,
+and stops if the R script fails.
+
+To run:
 
 ```bash
 bash code/run_get_TreeHeight.sh
 ```
 
+Checked from the project root: prints "Done: results/trees_treeheights.csv created", and the output matches running `get_TreeHeight.R` directly.
+
 ### pound_hill_analysis.R
 
-Reads `data/pound_hill_data.csv` and
-`data/pound_hill_meta_data.csv` and writes
-`results/pound_hill_plot_richness.csv`, `results/pound_hill_plot_richness.pdf`,
-`results/pound_hill_plot_abundance.csv` and `results/pound_hill_plot_abundance.pdf`.
+Compares mean species richness and abundance per quadrat across the March, May
+and October cultivation treatments at Pound Hill. Following the metadata, blank
+counts are treated as zeros, and quadrats are averaged within each plot first,
+because plots are the treatment replicates.
+
+Reads `data/pound_hill_data.csv` and `data/pound_hill_meta_data.csv`, and writes
+`results/pound_hill_plot_richness.csv` and `.pdf` (mean richness for each plot)
+and `results/pound_hill_plot_abundance.csv` and `.pdf` (mean richness and
+abundance for each plot).
+
+To run:
 
 ```bash
 Rscript code/pound_hill_analysis.R
 ```
 
+The grey bar on each figure is the median of the four plot means per treatment,
+because the median is more robust than the mean to a single extreme plot (e.g.
+October block c).
+
+Checked from the project root:
+- Treatment names: the exported tables use `march`, `may` and `october`, remaining the same as the input.
+- Traced example: plot 3 (March, block a) has quadrat richness values of 7, 5, 8, 7, 6 and 5, giving a mean of 6.333, matching the exported value.
+- Median bar: the treatment medians of the plot means are March 7.45, May 9.80 and October 6.90 (the means would be 7.81, 9.65 and 7.61), and the March bar on the figure sits at 7.45.
+- Figures: reopened both PDFs. The month labels, caption and values are correct.
+- Rerun test: running it again produced identical tables.
+
 ### Changes after Assignment 3 feedback
 
-TO DO
+Across all three R scripts, I corrected comments that were wrong or repeated the code, fixed indentation and typos, and added author information to each header.
+
+**TreeHeight.R**
+- Corrected the angle-check comment, which described distances, as the feedback asked.
+- Missing column names are now listed separately in the error message, instead of running together when more than one is missing.
+
+**get_TreeHeight.R**
+- Fixed the indentation of the validation blocks so they are easier to follow, as the feedback asked.
+
+**Both tree-height scripts**
+- An empty input file now gives "Input file has no tree records", instead of a misleading message about numbers.
+
+**pound_hill_analysis.R**
+- The exported tables now keep the lowercase treatment names from the input. The `factor()` labels had been renaming the data values, so capital month names are now applied only to the figure axis labels.
+- Added a caption to both figures saying the grey bar is the median of the plot means, as it could be read as a mean.
+
+After each change I reran the scripts and checked the outputs and messages above.
 
 ## In-class practice scripts
 
