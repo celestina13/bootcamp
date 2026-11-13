@@ -5,6 +5,12 @@
 # Arguments: 1 (file to count)
 # Date: Nov 2026
 
+#Stop with a clear message if the file is missing, unreadable or a folder
+if [[ ! -f "$1" || ! -r "$1" ]]; then
+    printf 'Error: %s is not a readable file\n' "$1" >&2
+    exit 1
+fi
+
 #Reading the file as input gives just the number, without the file name
 NumLines=`wc -l < "$1"`
 echo "The file $1 has $NumLines lines"
