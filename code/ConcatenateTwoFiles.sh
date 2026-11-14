@@ -12,6 +12,12 @@ if [[ ! -r "$1" || ! -r "$2" || -z "$3" ]]; then
     exit 1
 fi
 
+#Stop if either input is a folder, as cat would fail but the script would still finish
+if [[ ! -f "$1" || ! -f "$2" ]]; then
+    printf 'Error: both inputs must be files, not folders\n' >&2
+    exit 1
+fi
+
 #Overwrite the output with the first file, then append the second
 cat "$1" > "$3"
 cat "$2" >> "$3"
