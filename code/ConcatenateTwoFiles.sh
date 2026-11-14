@@ -18,6 +18,12 @@ if [[ ! -f "$1" || ! -f "$2" ]]; then
     exit 1
 fi
 
+#The output must be a separate file, otherwise an input is overwritten and lost
+if [[ "$3" -ef "$1" || "$3" -ef "$2" ]]; then
+    printf 'Error: the output must be a different file from both inputs\n' >&2
+    exit 1
+fi
+
 #Overwrite the output with the first file, then append the second
 cat "$1" > "$3"
 cat "$2" >> "$3"
