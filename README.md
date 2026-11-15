@@ -12,6 +12,7 @@ says what that script reads and what it may create.
 - bash and standard UNIX tools, plus `bc` for question 5 of the FASTA practical (check with `command -v bc`)
 - Python 3
 - R with ggplot2 (for `pound_hill_analysis.R`)
+- ImageMagick for `tiff2_png.sh` (check with `command -v convert`)
 
 ## Layout
 
@@ -278,23 +279,44 @@ After each change I reran the scripts and checked the outputs and messages above
 
 ## In-class practice scripts
 
-These print to the terminal unless a file is mentioned.
+The practice scripts follow the code in the MQB chapters, with my own headers and
+comments. I also added input checks to `CountLines.sh` and `ConcatenateTwoFiles.sh`.
+They print to the terminal unless a file is mentioned.
 
 ### Shell
 
-**variables.sh**
+**boilerplate.sh**: the basic layout of a shell script. `bash code/boilerplate.sh` prints "This is a shell script!" and exits with 0.
 
-**MyExampleScript.sh**: `bash code/MyExampleScript.sh`
+**MyExampleScript.sh**: uses an environment variable. `bash code/MyExampleScript.sh` prints "Hello" followed by your login name.
 
-**boilerplate.sh**: `bash code/boilerplate.sh`
+**variables.sh**: special variables, assigning a variable and reading user input. `bash code/variables.sh 1 "two words"` reports 2 arguments; entering `hello world` then `3 4` gives "New value: <hello world>" and "Their sum is: 7".
 
-**CheckLabel.sh**
+**CheckLabel.sh**: accepts exactly one label, oak or pine. `bash code/CheckLabel.sh oak` prints "Selected species: oak" (exit 0). An unknown label such as `maple` gives "Unknown label: maple" (exit 1), and no label gives a usage message (exit 2).
 
-**CountLines.sh**: `bash code/CountLines.sh data/trees.csv`
+**CountLines.sh**: counts the lines in a file.
 
-**ConcatenateTwoFiles.sh**
+`bash code/CountLines.sh data/trees.csv`
 
-**tiff2_png.sh**
+Checked:
+- Normal test: prints "The file data/trees.csv has 121 lines" (exit 0).
+- Invalid input tests: a missing file or a folder gives "is not a readable file" (exit 1); no file or more than one gives a usage message (exit 2).
+
+**ConcatenateTwoFiles.sh**: writes the first file to an output file, then adds the second.
+
+`mkdir -p results && bash code/ConcatenateTwoFiles.sh data/tab-example.tsv data/tab-example.tsv results/merged.tsv`
+
+Checked:
+- Normal test: creates `results/merged.tsv` with 6 lines (3 from each copy).
+- Invalid input tests: a missing input, a folder or no output named each stop with an error (exit 1).
+- Overwrite test: naming an input as the output stops with an error and the input is left unchanged.
+
+**tiff2_png.sh**: converts every `.tif` in the current folder to `.png` with ImageMagick. To test it, make two images in `sandbox/tiffs/` and run it inside that folder:
+
+`mkdir -p sandbox/tiffs && convert -size 10x10 xc:white sandbox/tiffs/a.tif && convert -size 10x10 xc:black sandbox/tiffs/b.tif`
+
+`cd sandbox/tiffs && bash ../../code/tiff2_png.sh`
+
+It prints "Converting a.tif" and "Converting b.tif" and creates `a.png` and `b.png`. In a folder with no `.tif` files, `convert` reports an error, as noted in the script.
 
 ### Python
 
