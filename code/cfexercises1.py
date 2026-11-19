@@ -48,3 +48,18 @@ def foo_6(x):
         facto = facto * x
         x = x - 1
     return facto
+
+
+def main():
+    """Print an example result from each function."""
+    print(f"foo_1(9) = {foo_1(9)}")
+    print(f"foo_2(3, 5) = {foo_2(3, 5)}")
+    print(f"foo_3(3, 1, 2) = {foo_3(3, 1, 2)}")
+    print(f"foo_4(5) = {foo_4(5)}")
+    print(f"foo_5(5) = {foo_5(5)}")
+    print(f"foo_6(5) = {foo_6(5)}")
+
+
+#Only run the examples when the file is run directly, not when it is imported
+if __name__ == "__main__":
+    main()
