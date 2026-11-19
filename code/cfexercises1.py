@@ -36,7 +36,7 @@ def foo_4(x):
 
 def foo_5(x):
     """Return the factorial of x, using recursion."""
-    if x == 1:
+    if x <= 1:
         return 1
     return x * foo_5(x - 1)
 
