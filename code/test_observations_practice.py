@@ -8,7 +8,7 @@ Run from the project root: python3 code/test_observations_practice.py
 Prints nothing if every check passes.
 """
 
-from observations_practice import load_observations, parse_count
+from observations_practice import load_observations, parse_count, summarise_site
 
 #Normal case: ordinary count text becomes an integer
 assert parse_count("2") == 2
@@ -27,3 +27,11 @@ for bad_count in ["-1", "many", 2]:
         pass
     else:
         raise AssertionError(f"Invalid count accepted: {bad_count!r}")
+
+#Normal case: known counts for one site are added up, ignoring other sites
+unique_rows = [
+    {"site": "A", "date": "2026-10-01", "count": "2"},
+    {"site": "A", "date": "2026-10-02", "count": "3"},
+    {"site": "B", "date": "2026-10-01", "count": "9"},
+]
+assert summarise_site(unique_rows, "A") == (5, 0)

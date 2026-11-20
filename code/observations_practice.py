@@ -35,6 +35,17 @@ def parse_count(count_text):
     return count
 
 
+
+def summarise_site(rows, site):
+    """Return (known_total, missing_count) for one site."""
+    known_total = 0
+    #Only rows for the requested site are added to the total
+    for row in rows:
+        if row["site"] == site:
+            known_total += parse_count(row["count"])
+    return (known_total, 0)
+
+
 if __name__ == "__main__":
     rows = load_observations("data/bootcamp_observations.csv")
     #Print a normal row and one with a blank count, to see how each is read
