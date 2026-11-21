@@ -35,3 +35,18 @@ unique_rows = [
     {"site": "B", "date": "2026-10-01", "count": "9"},
 ]
 assert summarise_site(unique_rows, "A") == (5, 0)
+
+#Boundary cases: blanks are missing, zero is known, and no rows gives no total
+missing_rows = [
+    {"site": "C", "date": "2026-10-01", "count": ""},
+    {"site": "C", "date": "2026-10-02", "count": ""},
+]
+zero_rows = [{"site": "D", "date": "2026-10-01", "count": "0"}]
+assert summarise_site(missing_rows, "C") == (None, 2)
+assert summarise_site(zero_rows, "D") == (0, 0)
+assert summarise_site([], "A") == (None, 0)
+assert summarise_site(unique_rows, "Z") == (None, 0)
+
+#Duplicates: a repeated non-zero count and a repeated blank are each counted once
+assert summarise_site(unique_rows + [unique_rows[0]], "A") == (5, 0)
+assert summarise_site(missing_rows + [missing_rows[0]], "C") == (None, 2)

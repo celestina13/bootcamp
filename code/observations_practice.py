@@ -37,13 +37,34 @@ def parse_count(count_text):
 
 
 def summarise_site(rows, site):
-    """Return (known_total, missing_count) for one site."""
+    """Return (known_total, missing_count) for one site.
+
+    known_total is None when the site has no known counts. Exact duplicate
+    records are only counted once.
+    """
     known_total = 0
-    #Only rows for the requested site are added to the total
+    missing_count = 0
+    has_known_count = False
+    seen_records = set()
     for row in rows:
+        #A record repeating the same site, date and count is skipped after its first copy
+        record = (row["site"], row["date"], row["count"])
+        if record in seen_records:
+            continue
+        seen_records.add(record)
+        #Only rows for the requested site are counted
         if row["site"] == site:
-            known_total += parse_count(row["count"])
-    return (known_total, 0)
+            count = parse_count(row["count"])
+            #Checking for None, not a false value, keeps an observed zero as a known count
+            if count is None:
+                missing_count += 1
+            else:
+                known_total += count
+                has_known_count = True
+    #With no known counts the total is unavailable, not zero
+    if not has_known_count:
+        return (None, missing_count)
+    return (known_total, missing_count)
 
 
 if __name__ == "__main__":
