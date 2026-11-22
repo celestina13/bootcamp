@@ -83,6 +83,7 @@ def summarise_site(rows, site):
 
 if __name__ == "__main__":
     rows = load_observations("data/bootcamp_observations.csv")
-    #Print a normal row and one with a blank count, to see how each is read
-    print(rows[0])
-    print(rows[2])
+    #One labelled summary for each site, in alphabetical order
+    for site in sorted({row["site"] for row in rows}):
+        known_total, missing_count = summarise_site(rows, site)
+        print(f"Site {site}: known total {known_total}, missing counts {missing_count}")
