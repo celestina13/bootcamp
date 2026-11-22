@@ -40,13 +40,28 @@ def summarise_site(rows, site):
     """Return (known_total, missing_count) for one site.
 
     known_total is None when the site has no known counts. Exact duplicate
-    records are only counted once.
+    records are only counted once. Raises ValueError for invalid input.
     """
+    #Bad arguments are reported straight away
+    if not isinstance(rows, list):
+        raise ValueError("rows must be a list of row dictionaries")
+    if not isinstance(site, str) or site == "":
+        raise ValueError(f"site must be non-empty text, got {site!r}")
     known_total = 0
     missing_count = 0
     has_known_count = False
     seen_records = set()
     for row in rows:
+        #Every row is checked, including rows for other sites, so bad data is never skipped
+        if not isinstance(row, dict):
+            raise ValueError(f"each row must be a dictionary, got {row!r}")
+        if set(row) != {"site", "date", "count"}:
+            raise ValueError(f"row must have exactly site, date and count, got {row!r}")
+        if not all(isinstance(value, str) for value in row.values()):
+            raise ValueError(f"row values must all be text, got {row!r}")
+        if row["site"] == "" or row["date"] == "":
+            raise ValueError(f"site and date cannot be blank, got {row!r}")
+        count = parse_count(row["count"])
         #A record repeating the same site, date and count is skipped after its first copy
         record = (row["site"], row["date"], row["count"])
         if record in seen_records:
@@ -54,7 +69,6 @@ def summarise_site(rows, site):
         seen_records.add(record)
         #Only rows for the requested site are counted
         if row["site"] == site:
-            count = parse_count(row["count"])
             #Checking for None, not a false value, keeps an observed zero as a known count
             if count is None:
                 missing_count += 1

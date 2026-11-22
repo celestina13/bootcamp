@@ -50,3 +50,47 @@ assert summarise_site(unique_rows, "Z") == (None, 0)
 #Duplicates: a repeated non-zero count and a repeated blank are each counted once
 assert summarise_site(unique_rows + [unique_rows[0]], "A") == (5, 0)
 assert summarise_site(missing_rows + [missing_rows[0]], "C") == (None, 2)
+
+#Checks against the supplied data files
+rows = load_observations("data/bootcamp_observations.csv")
+assert summarise_site(rows, "A") == (2, 1)
+assert summarise_site(rows, "B") == (0, 0)
+
+boundary_rows = load_observations("data/bootcamp_observations_boundary.csv")
+assert summarise_site(boundary_rows, "C") == (None, 2)
+assert summarise_site(boundary_rows, "D") == (0, 0)
+assert summarise_site(rows, "Z") == (None, 0)
+
+
+def expect_summary_error(rows, site="A"):
+    """Check that summarise_site raises ValueError for these arguments."""
+    try:
+        summarise_site(rows, site)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError, but the call succeeded")
+
+
+#Failure cases: each invalid row or argument must raise ValueError
+invalid_rows = load_observations("data/bootcamp_observations_invalid.csv")
+for invalid_row in invalid_rows:
+    expect_summary_error([invalid_row])
+
+expect_summary_error([{"site": "A", "count": "2"}])
+expect_summary_error([{"site": "A", "date": "2026-10-01", "count": "2", "extra": "x"}])
+expect_summary_error([{"site": "", "date": "2026-10-01", "count": "2"}])
+expect_summary_error([{"site": "A", "date": "", "count": "2"}])
+expect_summary_error([{"site": "A", "date": "2026-10-01", "count": 2}])
+expect_summary_error(["not a row dictionary"])
+expect_summary_error(None)
+expect_summary_error(rows, "")
+expect_summary_error(rows, 2)
+
+#An invalid row for another site still raises an error when A is requested
+expect_summary_error([unique_rows[0], invalid_rows[1]], "A")
+
+#The input rows are not changed
+original_rows = [row.copy() for row in rows]
+summarise_site(rows, "A")
+assert rows == original_rows
