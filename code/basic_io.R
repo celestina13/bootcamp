@@ -1,5 +1,7 @@
 MyData <- read.csv("data/trees.csv", header = TRUE) #import with headers
 
+dir.create("results", showWarnings = FALSE) #create results/ if it does not exist yet
+
 write.csv(MyData, "results/MyData.csv") #write it as a new file
 
 write.table(MyData[1, ], file = "results/MyData.csv", append = TRUE)
