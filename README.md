@@ -320,29 +320,51 @@ It prints "Converting a.tif" and "Converting b.tif" and creates `a.png` and `b.p
 
 ### Python
 
-**loops.py**: `python3 code/loops.py`
+**loops.py**: `for` and `while` loops. `python3 code/loops.py` prints 0 to 4, each item of a mixed list, a running total ending at 1234, then 1 to 100.
 
-**cfexercises1.py**: `python3 code/cfexercises1.py`
+**cfexercises1.py**: functions using conditionals and loops, made importable with a `__name__` guard.
 
-**cfexercises2.py**: `python3 code/cfexercises2.py`
+`python3 code/cfexercises1.py`
 
-**MyExampleScript.py**: `python3 code/MyExampleScript.py`
+Checked:
+- Normal test: prints one example from each function: `foo_1(9) = 3.0`, `foo_2(3, 5) = 5`, `foo_3(3, 1, 2) = [1, 2, 3]` and 120 for each factorial.
+- Boundary test: `foo_5(0)` now returns 1, like `foo_4(0)` and `foo_6(0)`, instead of crashing.
+- Import test: importing it prints nothing, so the examples only run when the file is run directly.
 
-**boilerplate.py**: `python3 code/boilerplate.py`
+**cfexercises2.py**: loops and conditionals combined. `python3 code/cfexercises2.py` prints "hello" 4, 4, 14, 5, 8 and 6 times from `hello_1` to `hello_6`.
 
-**using_name.py**
+**MyExampleScript.py**: saving and running a script. `python3 code/MyExampleScript.py` prints "The square of 2 is 4".
 
-**sysargv.py**
+**boilerplate.py**: the basic layout of a Python program. `python3 code/boilerplate.py` prints "This is a boilerplate".
 
-**control_flow.py**: `python3 code/control_flow.py`
+**using_name.py**: the value of `__name__`. `python3 code/using_name.py` prints "This module's name is: \_\_main\_\_". When imported, the module's name is `using_name` instead.
 
-**test_control_flow.py**
+**sysargv.py**: command-line arguments. `python3 code/sysargv.py oak 12` prints the script name, "Number of arguments: 2" and "Arguments: ['oak', '12']". With no arguments it reports 0.
 
-**observations_practice.py**
+**control_flow.py**: small functions using control flow, with doctests. `python3 code/control_flow.py` prints the even/odd, divisor and prime examples, ending "Primes up to 20: [2, 3, 5, 7, 11, 13, 17, 19]". `python3 -m doctest code/control_flow.py` prints nothing, as all 3 doctests pass.
 
-**test_observations_practice.py**
+**test_control_flow.py**: tests for `control_flow.py`. `python3 code/test_control_flow.py` prints nothing if every check passes.
 
-**debugme.py**
+**debugme.py**: a script that fails on purpose, for debugging practice. `python3 code/debugme.py` stops with `ZeroDivisionError: division by zero` (exit 1), as noted in the script.
+
+**observations_practice.py**: summarises the counts in `data/bootcamp_observations.csv` for each site. Blank counts are missing, zero is a known count, exact duplicate records are counted once and invalid input raises `ValueError`.
+
+`python3 code/observations_practice.py`
+
+Checked:
+- Normal test: prints "Site A: known total 2, missing counts 1" and "Site B: known total 0, missing counts 0".
+- Boundary, duplicate and invalid input tests: covered by `test_observations_practice.py` below.
+
+**test_observations_practice.py**: tests for `observations_practice.py`, using the three `data/bootcamp_observations` files.
+
+`python3 code/test_observations_practice.py`
+
+Checked (prints nothing when every check passes):
+- Normal tests: count text becomes an integer, and known counts for one site are added up.
+- Boundary tests: zero is a known count, all-blank counts give no total, and an empty list or absent site gives `(None, 0)`.
+- Duplicate tests: a repeated count and a repeated blank are each counted once.
+- Invalid input tests: negative or non-numeric counts, missing or extra fields, blank values and bad arguments raise `ValueError`, including an invalid row for a different site.
+- File checks: A `(2, 1)`, B `(0, 0)`, C `(None, 2)`, D `(0, 0)` and Z `(None, 0)`, and the input rows are unchanged.
 
 ### R
 
