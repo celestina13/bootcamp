@@ -4,7 +4,7 @@ dir.create("results", showWarnings = FALSE) #create results/ if it does not exis
 
 write.csv(MyData, "results/MyData.csv") #write it as a new file
 
-write.table(MyData[1, ], file = "results/MyData.csv", append = TRUE)
+write.table(MyData[1, ], file = "results/MyData.csv", append = TRUE) #append the first row (R warns that it is appending column names, which is expected)
 
 write.csv(MyData, "results/MyData.csv", row.names =TRUE) #write row names
 
