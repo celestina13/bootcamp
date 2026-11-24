@@ -40,14 +40,14 @@ MyWrangledData <- TempData |>
     values_to = "Count"
   )
 
-#pivot_longer() gives a tibble, so convert back to a data frame for the base R steps below
-MyWrangledData <- as.data.frame(MyWrangledData)
+#Make the four design columns factors and the counts whole numbers in one step
+library(dplyr)
 
-MyWrangledData[, "Cultivation"] <- as.factor(MyWrangledData[, "Cultivation"])
-MyWrangledData[, "Block"] <- as.factor(MyWrangledData[, "Block"])
-MyWrangledData[, "Plot"] <- as.factor(MyWrangledData[, "Plot"])
-MyWrangledData[, "Quadrat"] <- as.factor(MyWrangledData[, "Quadrat"])
-MyWrangledData[, "Count"] <- as.integer(MyWrangledData[, "Count"])
+MyWrangledData <- MyWrangledData |>
+  mutate(
+    across(c(Cultivation, Block, Plot, Quadrat), as.factor),
+    Count = as.integer(Count)
+  )
 
 str(MyWrangledData)
 head(MyWrangledData)
