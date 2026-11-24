@@ -1,5 +1,5 @@
 MyFunction <-  function(Arg1, Arg2) {
-  # This function takes two arguments and returns their sum
+  #Prints the type of each argument and returns both arguments together as a vector
   print(paste("Argument", as.character(Arg1), "is a", class(Arg1)))
   print(paste("Argument", as.character(Arg2), "is a", class(Arg2)))
   
