@@ -1,6 +1,6 @@
-#Control flow tools 
+#Control flow tools
 
-#if statments
+#if statements
 a <- TRUE
 if (a) {
   print("a is TRUE")
@@ -9,16 +9,16 @@ if (a) {
 }
 
 #running code on a single line
-z <- runif(1) #genertae a uniformly distributed random no
+z <- runif(1) #generate a uniformly distributed random number
 if (z <= 0.5) {print("Less than a half")}
 
 #for loops
-for (i in 1:10) { 
+for (i in 1:10) {
   j <- i * i
   print(paste(i," squared is", j))
 }
 #1:10 generates a sequence
-#j is a temporary variable that stores the value of the no in that iteration of the loop
+#j is a temporary variable that stores the value of the number in that iteration of the loop
 
 #loop over a vector of strings
 for(species in c('Heliodoxa rubinoides', 'Boissonneaua jardini', 'Sula nebouxii')) {
@@ -32,9 +32,9 @@ for (i in v1) {
 }
 
 #while loops
-#perform an operation till some conditon is met, use a while loop
+#perform an operation till some condition is met, use a while loop
 
-i <- 0 
+i <- 0
 while (i < 10) {
   i <- i+1
   print(i^2)
