@@ -1,3 +1,8 @@
+# Author: Celestina Hall (ceh121@ic.ac.uk)
+# Script: control_flow.R
+# Examples of if statements and for and while loops in R.
+# Run from the project root with: Rscript code/control_flow.R
+
 #Control flow tools
 
 #if statements
