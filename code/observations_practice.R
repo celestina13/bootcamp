@@ -43,6 +43,27 @@ read_observations <- function(path) {
   return(observations)
 }
 
+#Removes exact duplicate rows, then gives each site's known total and number of missing counts
+summarise_observations <- function(data) {
+  #A repeated row is the same observation recorded twice, so only its first copy is kept
+  data <- data[!duplicated(data), ]
+
+  sites <- sort(unique(data$site))
+  total_known <- integer(length(sites))
+  missing_count <- integer(length(sites))
+  for (i in seq_along(sites)) {
+    counts <- data$count[data$site == sites[i]]
+    missing_count[i] <- sum(is.na(counts))
+    #With no known counts the total is NA, because sum(na.rm = TRUE) would wrongly give 0
+    if (all(is.na(counts))) {
+      total_known[i] <- NA
+    } else {
+      total_known[i] <- sum(counts, na.rm = TRUE)
+    }
+  }
+  return(data.frame(site = sites, total_known = total_known, missing_count = missing_count))
+}
+
 observations <- read_observations("data/bootcamp_observations.csv")
 str(observations)
 print(observations)
@@ -51,3 +72,24 @@ print(observations)
 invalid_result <- try(read_observations("data/bootcamp_observations_invalid.csv"), silent = TRUE)
 stopifnot(inherits(invalid_result, "try-error"))
 cat("Invalid file rejected:", conditionMessage(attr(invalid_result, "condition")), "\n")
+
+summary_ordinary <- summarise_observations(observations)
+print(summary_ordinary)
+
+boundary <- read_observations("data/bootcamp_observations_boundary.csv")
+summary_boundary <- summarise_observations(boundary)
+print(summary_boundary)
+
+#Returns (total_known, missing_count) for one site, so the results can be checked
+site_result <- function(summary, site) {
+  row <- summary[summary$site == site, ]
+  return(c(row$total_known, row$missing_count))
+}
+
+#Expected results: A (2, 1), B (0, 0), C (NA, 2) and D (0, 0)
+stopifnot(
+  identical(site_result(summary_ordinary, "A"), c(2L, 1L)),
+  identical(site_result(summary_ordinary, "B"), c(0L, 0L)),
+  identical(site_result(summary_boundary, "C"), c(NA, 2L)),
+  identical(site_result(summary_boundary, "D"), c(0L, 0L))
+)
