@@ -93,3 +93,21 @@ stopifnot(
   identical(site_result(summary_boundary, "C"), c(NA, 2L)),
   identical(site_result(summary_boundary, "D"), c(0L, 0L))
 )
+
+#Plot the known total for every site, so the all-missing site is shown as NA rather than 0
+all_summaries <- rbind(summary_ordinary, summary_boundary)
+dir.create("results", showWarnings = FALSE)
+pdf("results/observations_known_totals.pdf", width = 6, height = 4.5)
+#barplot() draws no bar for NA, so site C's gap is labelled instead of looking like a zero
+positions <- barplot(all_summaries$total_known, names.arg = all_summaries$site,
+                     ylim = c(0, max(all_summaries$total_known, na.rm = TRUE) + 1),
+                     xlab = "Site", ylab = "Known total count",
+                     main = "Known observation totals by site")
+missing_sites <- is.na(all_summaries$total_known)
+text(positions[missing_sites], 0.4, "NA: no\nknown counts", cex = 0.8)
+#A known total of 0 has no visible bar either, so it is labelled to tell it apart from NA
+zero_sites <- !missing_sites & all_summaries$total_known == 0
+text(positions[zero_sites], 0.15, "0", cex = 0.8)
+mtext("Site C has only missing counts, so its known total is NA, not 0.",
+      side = 1, line = 4, cex = 0.8)
+invisible(dev.off())
