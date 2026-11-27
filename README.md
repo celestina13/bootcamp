@@ -274,6 +274,7 @@ Across all three R scripts, I corrected comments that were wrong or repeated the
 **pound_hill_analysis.R**
 - The exported tables now keep the lowercase treatment names from the input. The `factor()` labels had been renaming the data values, so capital month names are now applied only to the figure axis labels.
 - Added a caption to both figures saying the grey bar is the median of the plot means, as it could be read as a mean.
+- Put the repeated figure code into a `plot_by_treatment()` function, so both figures share one layout. Rerunning gave identical tables and figures.
 
 After each change I reran the scripts and checked the outputs and messages above.
 
@@ -413,7 +414,7 @@ Checked:
 
 ## Use of AI
 
-I used AI tools as a learning aid throughout this work to help me understand programming concepts, clarify unfamiliar topics and brainstorm ideas for approaching tasks. I also used AI to discuss possible solutions and improve my understanding of errors and debugging.
+I used AI tools as a learning aid throughout this work to help me understand programming concepts, clarify unfamiliar topics and brainstorm ideas for approaching tasks.
 
 ## Clone check
 
