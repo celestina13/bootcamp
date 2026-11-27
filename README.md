@@ -414,3 +414,7 @@ Checked:
 ## Use of AI
 
 I used AI tools as a learning aid throughout this work to help me understand programming concepts, clarify unfamiliar topics and brainstorm ideas for approaching tasks. I also used AI to discuss possible solutions and improve my understanding of errors and debugging.
+
+## Clone check
+
+I cloned the repository from GitHub into a new folder and ran the README commands from its root. All scripts ran and gave the outputs described above, and `git status` showed no generated files to commit.
