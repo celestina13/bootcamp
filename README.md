@@ -413,5 +413,4 @@ Checked:
 
 ## Use of AI
 
-TODO
-
+I used AI tools as a learning aid throughout this work to help me understand programming concepts, clarify unfamiliar topics and brainstorm ideas for approaching tasks. I also used AI to discuss possible solutions and improve my understanding of errors and debugging.
