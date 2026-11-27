@@ -156,6 +156,7 @@ A future improvement would be to run these checks with pytest so all failures ar
 - Added checks on the contents of the clean and issues files. Previously only line counts were checked, so a wrong value would have passed.
 - Added a check of every field of a cleaned record, so a wrong value is traced to `validate_record()` rather than found later in the output files.
 - Added author and usage information.
+- Checked that the new tests can fail by temporarily breaking the code: each failed, then passed once the code was restored.
 
 **clean_silwood_trees.py**
 - Added comments explaining the reasons for less obvious validation and cleaning steps.
@@ -272,7 +273,7 @@ Across all three R scripts, I corrected comments that were wrong or repeated the
 - An empty input file now gives "Input file has no tree records", instead of a misleading message about numbers.
 
 **pound_hill_analysis.R**
-- The exported tables now keep the lowercase treatment names from the input. The `factor()` labels had been renaming the data values, so capital month names are now applied only to the figure axis labels.
+- The exported tables now keep the lowercase treatment names from the input. The `factor()` labels had been renaming the data values, so capital month names are now applied only to the figure axis labels. Checked: the CSVs show `march`, `may` and `october`.
 - Added a caption to both figures saying the grey bar is the median of the plot means, as it could be read as a mean.
 - Put the repeated figure code into a `plot_by_treatment()` function, so both figures share one layout. Rerunning gave identical tables and figures.
 
