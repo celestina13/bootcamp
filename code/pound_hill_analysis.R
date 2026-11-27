@@ -143,22 +143,26 @@ dir.create("results", showWarnings = FALSE)
 #Save the plot mean richness table
 write.csv(PlotRichness, "results/pound_hill_plot_richness.csv", row.names = FALSE)
 
-#Plot mean richness for each plot by treatment
-#Each point is one plot's mean.
-#The grey bar is the median of the four plot means in each treatment.
-RichnessFig <- ggplot(PlotRichness, aes(x = Cultivation, y = MeanRichness)) +
-  stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
-  geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
-  scale_x_discrete(labels = month_labels) +
-  ylim(0, NA) +
-  labs(x = "Month of cultivation treatment",
-       y = "Mean species richness per quadrat",
-       shape = "Block",
-       caption = "Points: plot means. Grey bar: treatment median of the plot means.") +
-  theme_classic()
+#Plots one plot-level measure by treatment and saves it as a PDF, so both figures share one layout
+plot_by_treatment <- function(data, y, y_label, file) {
+  #Each point is one plot's mean.
+  #The grey bar is the median of the four plot means in each treatment.
+  fig <- ggplot(data, aes(x = Cultivation, y = .data[[y]])) +
+    stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
+    geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
+    scale_x_discrete(labels = month_labels) +
+    ylim(0, NA) +
+    labs(x = "Month of cultivation treatment",
+         y = y_label,
+         shape = "Block",
+         caption = "Points: plot means. Grey bar: treatment median of the plot means.") +
+    theme_classic()
+  ggsave(file, fig, width = 6, height = 4.5)
+}
 
-#Save the figure
-ggsave("results/pound_hill_plot_richness.pdf", RichnessFig, width = 6, height = 4.5)
+#Plot and save mean richness for each plot by treatment
+plot_by_treatment(PlotRichness, "MeanRichness", "Mean species richness per quadrat",
+                  "results/pound_hill_plot_richness.pdf")
 
 #Calculate total abundance in each quadrat (sum of all species counts)
 QuadratAbundance <- aggregate(Count ~ Cultivation + Block + Plot + Quadrat,
@@ -184,22 +188,9 @@ aggregate(cbind(MeanRichness, MeanAbundance) ~ Cultivation,
 #Save the plot-level richness and abundance table
 write.csv(PlotSummary, "results/pound_hill_plot_abundance.csv", row.names = FALSE)
 
-#Plot mean abundance for each plot by treatment
-#Each point is one plot's mean.
-#The grey bar is the median of the four plot means in each treatment.
-AbundanceFig <- ggplot(PlotSummary, aes(x = Cultivation, y = MeanAbundance)) +
-  stat_summary(fun = median, geom = "crossbar", width = 0.4, colour = "grey50") +
-  geom_point(aes(shape = Block), size = 3, position = position_dodge(width = 0.3)) +
-  scale_x_discrete(labels = month_labels) +
-  ylim(0, NA) +
-  labs(x = "Month of cultivation treatment",
-       y = "Mean number of plants per quadrat",
-       shape = "Block",
-       caption = "Points: plot means. Grey bar: treatment median of the plot means.") +
-  theme_classic()
-
-#Save the abundance figure
-ggsave("results/pound_hill_plot_abundance.pdf", AbundanceFig, width = 6, height = 4.5)
+#Plot and save mean abundance for each plot by treatment
+plot_by_treatment(PlotSummary, "MeanAbundance", "Mean number of plants per quadrat",
+                  "results/pound_hill_plot_abundance.pdf")
 
 #Interpretation
 
