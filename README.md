@@ -11,7 +11,7 @@ says what that script reads and what it may create.
 
 - bash and standard UNIX tools, plus `bc` for question 5 of the FASTA practical (check with `command -v bc`)
 - Python 3
-- R with ggplot2 (for `pound_hill_analysis.R`)
+- R with ggplot2 (for `pound_hill_analysis.R`), reshape2 (for `data_wrang.R`) and dplyr and tidyr (for `data_wrang_tidy.R`)
 - ImageMagick for `tiff2_png.sh` (check with `command -v convert`)
 
 ## Layout
@@ -345,7 +345,7 @@ Checked:
 
 **test_control_flow.py**: tests for `control_flow.py`. `python3 code/test_control_flow.py` prints nothing if every check passes.
 
-**debugme.py**: a script that fails on purpose, for debugging practice. `python3 code/debugme.py` stops with `ZeroDivisionError: division by zero` (exit 1), as noted in the script.
+**debugme.py**: a script that fails on purpose, used for debugging practice. `python3 code/debugme.py` stops with `ZeroDivisionError: division by zero` (exit 1), as noted in the script.
 
 **observations_practice.py**: summarises the counts in `data/bootcamp_observations.csv` for each site. Blank counts are missing, zero is a known count, exact duplicate records are counted once and invalid input raises `ValueError`.
 
@@ -368,27 +368,48 @@ Checked (prints nothing when every check passes):
 
 ### R
 
-**basic_io.R**: Reads `data/trees.csv` and writes `results/MyData.csv`.
+**basic_io.R**: reading and writing files. Reads `data/trees.csv` and writes `results/MyData.csv`, creating `results/` if needed.
+
 `Rscript code/basic_io.R`
 
-**boilerplate.R**: `Rscript code/boilerplate.R`
+Checked:
+- Normal test: creates `results/MyData.csv` from a fresh clone, where `results/` does not exist yet.
+- R warns "appending column names to file", which is expected.
 
-**control_flow.R**: `Rscript code/control_flow.R`
+**boilerplate.R**: the basic layout of an R function. `Rscript code/boilerplate.R` prints the type of each argument, e.g. "Argument 1 is a numeric", and returns both arguments as a vector.
 
-**r_conditionals.R**
+**control_flow.R**: `if` statements and `for` and `while` loops. `Rscript code/control_flow.R` prints "a is TRUE", the squares of 1 to 10, three bird species and the items of a vector. "Less than a half" only appears when the random number is 0.5 or less.
 
-**break.R**
+**r_conditionals.R**: functions using conditionals. `Rscript code/r_conditionals.R` prints "6 is even!", "4 is a power of 2!" and "3 is a prime!". The MQB version of `is.prime()` wrongly reports 2 as composite, as noted in the script.
 
-**next.R**
+**break.R**: stopping a loop with `break`. `Rscript code/break.R` prints "i equals 0" to "i equals 9", then stops.
 
-**try.R**
+**next.R**: skipping loop iterations with `next`. `Rscript code/next.R` prints the odd numbers 1, 3, 5, 7 and 9.
 
-**browse.R**: interactive
-**observations_practice.R**
+**try.R**: catching errors with `try()`. `Rscript code/try.R` runs the sampling function 15 times, printing a mean for some runs and a caught error for others, and finishes without stopping. Its histogram is saved as `Rplots.pdf`, which is ignored by git.
 
-**data_wrang.R**
+**browse.R**: pausing a function with `browser()`. It is interactive, so start R at the project root and run `source("code/browse.R")`. It pauses at `Browse[1]>` in each generation of the loop. Typing `N` at the first pause showed `1.000000 2.718282` followed by NAs, and `t` showed 2. `c` continued to the next generation, where `N` had a third value (7.389056), and `Q` quit.
 
-**data_wrang_tidy.R**
+**data_wrang.R**: reshaping the Pound Hill data from wide to long form with reshape2. Reads `data/pound_hill_data.csv` and `data/pound_hill_meta_data.csv`. `Rscript code/data_wrang.R` writes `results/pound_hill_long.csv`, with 2,419 rows and the columns Cultivation, Block, Plot, Quadrat, Species and Count.
+
+**data_wrang_tidy.R**: the same reshaping with dplyr and tidyr instead of reshape2, from the same two input files.
+
+`Rscript code/data_wrang_tidy.R`
+
+Checked:
+- Normal test: writes `results/pound_hill_long_tidy.csv` with 2,419 rows and the same columns as `data_wrang.R`.
+- Comparison: once both tables are sorted the same way, every value matches `data_wrang.R`'s output. Only the row order differs, as `pivot_longer()` lists the species within each quadrat while `melt()` lists the quadrats within each species.
+
+**observations_practice.R**: checks and summarises the observation files in R, with the same rules as the Python version. Reads `data/bootcamp_observations.csv`, `data/bootcamp_observations_boundary.csv` and `data/bootcamp_observations_invalid.csv`.
+
+`Rscript code/observations_practice.R`
+
+Checked:
+- Normal tests: A gives `(2, 1)` and B gives `(0, 0)`, where each pair is (known total, missing count).
+- Boundary tests: C, whose counts are all missing, gives `(NA, 2)` rather than 0, and D's repeated zero gives `(0, 0)`.
+- Invalid input tests: the invalid file stops with "CSV line 2, column 'count': found '-1'; expected an empty field or a non-negative integer". A count of `many` names CSV line 3 in the same way.
+- The four results are checked with `stopifnot()`, so a wrong value stops the script.
+- Figure: `results/observations_known_totals.pdf` shows each site's known total, labels site C as "NA: no known counts" and labels the zeros, so a missing total is not shown as 0. Rerunning replaces it.
 
 ## Use of AI
 
